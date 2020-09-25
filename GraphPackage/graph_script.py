@@ -16,7 +16,8 @@ class Graph:
         #         self.V += 1
         self.graph[u].append(v)
         # print(self.graph[v])
-        self.graph[v] = []
+        if v not in self.graph:
+            self.graph[v] = []
         # print(self.graph)
         # print(self.V)      
 
