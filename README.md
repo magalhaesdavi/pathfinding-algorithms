@@ -1,2 +1,2 @@
 # Trabalho de IA
- Trabalho da disciplina de IA. Como o tema ainda está a ser definido, o nome do repositório pode mudar.
+Trabalho de IA sobre o problema de Mapa (grafo de cidades). Nesse trabalho iremos implementar diversos algoritmos para encontrar a solução de um grafo de cidades gerado aleatoriamente, e no final comparar custos, caminhos, tempo de execução, etc.
