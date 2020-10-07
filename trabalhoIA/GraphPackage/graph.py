@@ -1,16 +1,26 @@
 from collections import defaultdict
 from collections import deque
 
-#O grafo é um defaultdict de dict, no dict interior temos o vertice conectado com o valor do peso da aresta
 
 class Graph:
+    """
+    Classe de grafo baseado em lista de adjacencia.
+    O grafo é um defaultdict de dict,
+    no dict interior temos o vertice conectado com o valor do peso da aresta.
+    """
 
-    def __init__(self):
+    def __init__(self, direcionado=False):
         # self.V = 0
         # self.node = defaultdict(int)
+        self.direcionado = direcionado
         self.graph = defaultdict(dict)
 
     def addEdge(self, u, v, weight):
+        """
+        Conecta dois nos de id 'u' e 'v' atraves de uma arestas com um peso 'weight' associado.
+        Caso os nos nao existam, os mesmos sao criados.
+        """
+
         # if (u not in self.graph) and (v not in self.graph):
         #     self.V += 2
         #     print("dois")
@@ -18,10 +28,9 @@ class Graph:
         #     if (u in self.graph) or (v in self.graph):
         #         self.V += 1
 
-
         # self.graph[u].append(v)
-        if u not in self.graph: #esse if é para nao resetar o no toda vez q for inserir uma aresta nele
-            self.graph[u] = {}          
+        if u not in self.graph:  # esse if é para nao resetar o no toda vez q for inserir uma aresta nele
+            self.graph[u] = {}
         self.graph[u][v] = weight
 
         if v not in self.graph:
@@ -35,13 +44,13 @@ class Graph:
 
         while queue:
             s = queue.popleft()
-            print(s, end = " ")
+            print(s, end=" ")
 
             for i in self.graph[s]:
-                if visited[i] == False:  #not visited[i] talvez funcione também
+                if visited[i] == False:  # not visited[i] talvez funcione também
                     queue.append(i)
                     visited[i] = True
-    
+
     def DFS(self, s):
         visited = [False] * (len(self.graph))
         stack = []
@@ -51,10 +60,10 @@ class Graph:
             s = stack[-1]
             stack.pop()
 
-            if not visited[s]:  #not visited[s] talvez funcione também
-                print(s, end = " ")
+            if not visited[s]:  # not visited[s] talvez funcione também
+                print(s, end=" ")
                 visited[s] = True
 
             for i in self.graph[s]:
-                if not visited[i]:  #not visited[i] talvez funcione também
+                if not visited[i]:  # not visited[i] talvez funcione também
                     stack.append(i)
