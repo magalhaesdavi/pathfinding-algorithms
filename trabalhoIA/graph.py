@@ -1,6 +1,9 @@
 from collections import defaultdict
 from collections import deque
 
+# IMPLEMENTAR GETNODE(id)
+# IMPLEMENTAR INSERTNODE(id)
+# IMPLEMENTAR MAGIC METHODS 
 
 class Graph:
     """

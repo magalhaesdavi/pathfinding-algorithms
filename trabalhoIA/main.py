@@ -1,6 +1,6 @@
-from .GraphPackage import graph_script
+from graph import Graph
 
-g = graph_script.Graph()
+g = Graph()
 g.addEdge(1, 0, 5)
 g.addEdge(0, 2, 5)
 g.addEdge(2, 1, 5)
