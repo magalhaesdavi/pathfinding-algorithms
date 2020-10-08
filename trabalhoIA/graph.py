@@ -1,7 +1,8 @@
-from collections import defaultdict
-from collections import deque
+from collections import defaultdict, deque, namedtuple
+import random
 
-# IMPLEMENTAR MAGIC METHODS 
+# IMPLEMENTAR MAGIC METHODS
+
 
 class Graph:
     """
@@ -10,7 +11,7 @@ class Graph:
     no dict interior temos o vertice conectado com o valor do peso da aresta.
     """
 
-    def __init__(self, direcionado=False):
+    def __init__(self, direcionado: bool = True):
         # self.V = 0
         # self.node = defaultdict(int)
         self.__direcionado = direcionado
@@ -20,6 +21,8 @@ class Graph:
         return len(self.graph)
 
     def __getitem__(self, key):
+        if key not in self.graph:
+            raise KeyError(f"Key {key} not in the graph.")
         return self.graph[key]
 
     def __iter__(self):
@@ -45,7 +48,7 @@ class Graph:
             self.graph[node_id] = {}
             return True
 
-    def addEdge(self, u, v, weight, inplace=True):
+    def addEdge(self, u, v, weight_=0, edgeID_=-1, inplace=False):
         """
         Conecta dois nos de id 'u' e 'v' atraves de uma arestas com um peso 'weight' associado.
         Caso os nos nao existam, os mesmos sao criados.
@@ -60,20 +63,33 @@ class Graph:
         #         self.V += 1
 
         # self.graph[u].append(v)
-        if u not in self.graph and inplace:  # esse if é para nao resetar o no toda vez q for inserir uma aresta nele
-            self.graph[u] = {}
-        else:
-            return f"ERROR! Node {u} not in the graph"
-        self.graph[u][v] = weight
+        # esse if é para nao resetar o no toda vez q for inserir uma aresta nele
+        if u not in self.graph:
+            if inplace:
+                self.graph[u] = {}
+            else:
+                return f"ERROR! Node {u} not in the graph"
+
+        # ESSE É O JEITO CERTO, NÃO TENTE ME CONFRONTAR
+        edge = namedtuple("Edge", ["edgeID", "weight"])
+        self.graph[u][v] = edge(edgeID=edgeID_, weight=weight_)
+        # self.graph[u][v] = weight
 
         if not self.__direcionado:
-            if v not in self.graph and inplace:
-                self.graph[v] = {}
-            else:
-                return f"ERROR! Node {v} not in the graph"
-            self.graph[v][u] = weight
-        
+            if v not in self.graph:
+                if inplace:
+                    self.graph[v] = {}
+                else:
+                    return f"ERROR! Node {v} not in the graph"
+
+            self.graph[v][u] = edge(edgeID=edgeID_, weight=weight_)
+            # self.graph[v][u] = weight
+
         return True
+
+    def plotGraph(self):
+        plot = ""
+        # for
 
     def BFS(self, s):
         visited = [False] * (len(self.graph))
@@ -106,3 +122,14 @@ class Graph:
             for i in self.graph[s]:
                 if not visited[i]:  # not visited[i] talvez funcione também
                     stack.append(i)
+
+
+if __name__ == "__main__":
+    G = Graph(False)
+    G.insertNode("A")
+    G.insertNode("B")
+    G.addEdge("A", "B", 10)
+    print(len(G))
+    print(G["B"])
+    print(G.searchNode("A"))
+    print(G.graph)
