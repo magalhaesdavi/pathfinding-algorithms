@@ -15,8 +15,26 @@ class Graph:
     def __init__(self, direcionado=False):
         # self.V = 0
         # self.node = defaultdict(int)
-        self.direcionado = direcionado
+        self.__direcionado = direcionado
         self.graph = defaultdict(dict)
+
+
+    def searchNode(self, node_id):
+        """
+        Procura e retorna o no pelo id 'node_id e retorna False caso não encontre.
+        """
+        return self.graph[node_id] if node_id in self.graph else False
+
+    def insertNode(self, node_id):
+        """
+        Insere um nó de id 'node_id' no grafo.
+        A operação é cancelada caso o nó já exista.
+        """
+        if self.searchNode(node_id):
+            return "ERROR! Node already in the graph"
+        else:
+            self.graph[node_id] = {}
+            return True
 
     def addEdge(self, u, v, weight):
         """
