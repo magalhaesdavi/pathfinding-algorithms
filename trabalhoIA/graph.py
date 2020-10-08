@@ -7,11 +7,11 @@ import random
 class Graph:
     """
     Classe de grafo baseado em lista de adjacencia.
-    O grafo é um defaultdict de dict,
+    O grafo e um defaultdict de dict,
     no dict interior temos o vertice conectado com o valor do peso da aresta.
     """
 
-    def __init__(self, direcionado: bool = True):
+    def __init__(self, direcionado=True):
         # self.V = 0
         # self.node = defaultdict(int)
         self.__direcionado = direcionado
@@ -30,6 +30,9 @@ class Graph:
 
     def __contains__(self, value):
         return value in self.graph
+
+    def __str__(self):
+        return self.plotGraph()
 
     def searchNode(self, node_id):
         """
@@ -88,8 +91,15 @@ class Graph:
         return True
 
     def plotGraph(self):
-        plot = ""
-        # for
+        plot = "######################\n"
+        for node in self.graph.items():
+            print(node)
+            plot += f"{node[0]} -> "
+            for edge in node[1].items():
+                plot += f"({edge[0]}, {edge[1].weight}), "
+            plot += "\n"
+        plot += "######################\n"
+        return plot
 
     def BFS(self, s):
         visited = [False] * (len(self.graph))
@@ -129,7 +139,9 @@ if __name__ == "__main__":
     G.insertNode("A")
     G.insertNode("B")
     G.addEdge("A", "B", 10)
+
     print(len(G))
     print(G["B"])
     print(G.searchNode("A"))
     print(G.graph)
+    print(G)
