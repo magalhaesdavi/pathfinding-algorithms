@@ -1,8 +1,6 @@
 from collections import defaultdict
 from collections import deque
 
-# IMPLEMENTAR GETNODE(id)
-# IMPLEMENTAR INSERTNODE(id)
 # IMPLEMENTAR MAGIC METHODS 
 
 class Graph:
@@ -36,10 +34,11 @@ class Graph:
             self.graph[node_id] = {}
             return True
 
-    def addEdge(self, u, v, weight):
+    def addEdge(self, u, v, weight, inplace=True):
         """
         Conecta dois nos de id 'u' e 'v' atraves de uma arestas com um peso 'weight' associado.
         Caso os nos nao existam, os mesmos sao criados.
+        O paramêtro 'inplace' especifica se, caso um dos nós não exista, os mesmos sejam criados.
         """
 
         # if (u not in self.graph) and (v not in self.graph):
@@ -50,12 +49,20 @@ class Graph:
         #         self.V += 1
 
         # self.graph[u].append(v)
-        if u not in self.graph:  # esse if é para nao resetar o no toda vez q for inserir uma aresta nele
+        if u not in self.graph and inplace:  # esse if é para nao resetar o no toda vez q for inserir uma aresta nele
             self.graph[u] = {}
+        else:
+            return f"ERROR! Node {u} not in the graph"
         self.graph[u][v] = weight
 
-        if v not in self.graph:
-            self.graph[v] = {}
+        if not self.__direcionado:
+            if v not in self.graph and inplace:
+                self.graph[v] = {}
+            else:
+                return f"ERROR! Node {v} not in the graph"
+            self.graph[v][u] = weight
+        
+        return True
 
     def BFS(self, s):
         visited = [False] * (len(self.graph))
