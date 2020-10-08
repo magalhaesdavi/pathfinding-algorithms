@@ -1,8 +1,6 @@
 from collections import defaultdict, deque, namedtuple
 import random
 
-# IMPLEMENTAR MAGIC METHODS
-
 
 class Graph:
     """
@@ -22,7 +20,7 @@ class Graph:
 
     def __getitem__(self, key):
         if key not in self.graph:
-            raise KeyError(f"Key {key} not in the graph.")
+            raise KeyError("Key {} not in the graph.".format(key))
         return self.graph[key]
 
     def __iter__(self):
@@ -93,7 +91,6 @@ class Graph:
     def plotGraph(self):
         plot = "######################\n"
         for node in self.graph.items():
-            print(node)
             plot += f"{node[0]} -> "
             for edge in node[1].items():
                 plot += f"({edge[0]}, {edge[1].weight}), "
