@@ -16,6 +16,17 @@ class Graph:
         self.__direcionado = direcionado
         self.graph = defaultdict(dict)
 
+    def __len__(self):
+        return len(self.graph)
+
+    def __getitem__(self, key):
+        return self.graph[key]
+
+    def __iter__(self):
+        return self.graph.items()
+
+    def __contains__(self, value):
+        return value in self.graph
 
     def searchNode(self, node_id):
         """
