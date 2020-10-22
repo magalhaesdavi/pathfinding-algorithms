@@ -49,39 +49,22 @@ class Graph:
             self.graph[node_id] = {}
             return True
 
-    def addEdge(self, u, v, weight_=0, edgeID_=-1, inplace=False):
+    def addEdge(self, u, v, weight_=0, edgeID_=-1):
         """
         Conecta dois nos de id 'u' e 'v' atraves de uma arestas com um peso 'weight' associado.
         Caso os nos nao existam, os mesmos sao criados.
         O paramêtro 'inplace' especifica se, caso um dos nós não exista, os mesmos sejam criados.
         """
-
-        # if (u not in self.graph) and (v not in self.graph):
-        #     self.V += 2
-        #     print("dois")
-        # else:
-        #     if (u in self.graph) or (v in self.graph):
-        #         self.V += 1
-
-        # self.graph[u].append(v)
-        # esse if é para nao resetar o no toda vez q for inserir uma aresta nele
         if u not in self.graph:
-            if inplace:
-                self.graph[u] = {}
-            else:
-                return f"ERROR! Node {u} not in the graph"
+            self.graph[u] = {}
 
-        # ESSE É O JEITO CERTO, NÃO TENTE ME CONFRONTAR
         edge = namedtuple("Edge", ["edgeID", "weight"])
         self.graph[u][v] = edge(edgeID=edgeID_, weight=weight_)
         # self.graph[u][v] = weight
 
         if not self.__direcionado:
             if v not in self.graph:
-                if inplace:
-                    self.graph[v] = {}
-                else:
-                    return f"ERROR! Node {v} not in the graph"
+                self.graph[v] = {}
 
             self.graph[v][u] = edge(edgeID=edgeID_, weight=weight_)
             # self.graph[v][u] = weight
