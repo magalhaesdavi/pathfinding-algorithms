@@ -11,28 +11,32 @@ def irrevocabile(graph, start_node_id, terminal_node_id):
     fail = False
     solution = [start_node_id]
     visited = [start_node_id]
-    ok = False
 
     while not success or not fail:
+        ok = False
         current_node = solution[-1]
-        edges = [node for node in graph[current_node].keys()]
-        while len(edges) > 0:
-            # Nesta implementacao a escolha da regra sera aleatoria
-            randNode = random.sample(edges, 1)[0]
+        edges = list(graph[current_node].keys())
 
-            if randNode not in solution:
-                if randNode not in visited:
-                    visited.append(randNode)
+        while len(edges) > 0:
+
+            # Nesta implementacao a escolha da regra/edge é por ordem alfabética ou crescente (se forem numeros)
+            edges.sort()
+            chsn_node = edges[0]
+
+            if chsn_node not in visited:
+                visited.append(chsn_node)
+                if chsn_node not in solution:
                     ok = True
                     break
             else:
-                edges.pop(edges.index(randNode))
+                del edges[0]
 
         if not ok:
             fail = True
             break
-        solution.append(randNode)
-        if randNode == terminal_node_id:
+
+        solution.append(chsn_node)
+        if chsn_node == terminal_node_id:
             success = True
             break
 
@@ -92,4 +96,4 @@ if __name__ == "__main__":
         G.addEdge(conection[0], conection[1], conection[2])
     print(G)
     print(backTracking(G, "B", "Z"))
-    # print(irrevocabile(G, "B", "Z"))
+    print(irrevocabile(G, "B", "Z"))
