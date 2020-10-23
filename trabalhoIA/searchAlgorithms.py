@@ -49,7 +49,7 @@ def backTracking(graph, start_node_id, terminal_node_id):
 
     return solution, "SUCCESS" if success else "FAILURE"
 
-def breadth_first_search(self, start, destination):
+def breadth_first_search(graph, start, destination):
     parentMap = {}
     visited = []
     solution = []
@@ -65,7 +65,7 @@ def breadth_first_search(self, start, destination):
             success = True
             break
         else:
-            for child in self.graph[current]:
+            for child in graph[current]:
                 if child not in visited:
                     queue.append(child)
                     visited.append(child)
@@ -82,7 +82,7 @@ def breadth_first_search(self, start, destination):
     else:
         return solution, "failure"
 
-def depth_first_search(self, start, destination):
+def depth_first_search(graph, start, destination):
     parentMap = {}
     visited = []
     stack = []
@@ -102,7 +102,7 @@ def depth_first_search(self, start, destination):
             success = True
             break
 
-        for child in self.graph[current]:
+        for child in graph[current]:
             if child not in visited: 
                 stack.append(child)
                 parentMap[child.vertex_id] = current.vertex_id
