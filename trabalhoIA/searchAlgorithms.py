@@ -2,6 +2,7 @@
 from queue import Queue
 from collections import defaultdict, deque, namedtuple
 import random
+import time 
 
 def backTracking(graph, start_node_id, terminal_node_id):
     # Inicializando flag de sucesso e fracasso
@@ -16,7 +17,7 @@ def backTracking(graph, start_node_id, terminal_node_id):
     solution.append(start_node_id)
     tree.append(start_node_id)
 
-    i = 0
+    # i = 0
 
     while not success or not fail:
         # Verificamos se e possivel aplicar regras no ultimo no na pilha
@@ -49,38 +50,54 @@ def backTracking(graph, start_node_id, terminal_node_id):
 
     return solution, "SUCCESS" if success else "FAILURE"
 
-def breadth_first_search(graph, start, destination):
-    parentMap = {}
-    visited = []
-    solution = []
-    current = start
-    queue = deque()
-    queue.append(current)
-    visited.append(current)
-    success = False
+def breadth_first_search(graph, start, end):
+
+    # start = time.time()
+    start_t = time.time()
+    path = list({k for k in graph.graph.keys() if k.vertex_id == start})
+    path.append(list({k for k in graph.graph.keys() if k.vertex_id == end})[0])
+    end_t = time.time()
+
+    print("")
+    print("TIME: ", end_t - start_t)
+    print(path)
+    # print(end_t - start_tart)
+    # print(path)
+
+    # parentMap = {}
+    # visited = []
+    # solution = []
+    # # current = start
+    # queue = deque()
+    # queue.append(current)
+    # visited.append(current)
+    # success = False
+    # # print(current)
+    # # print(destination)
         
-    while queue and not success:
-        current = queue.popleft()   
-        if current == destination:
-            success = True
-            break
-        else:
-            for child in graph[current]:
-                if child not in visited:
-                    queue.append(child)
-                    visited.append(child)
-                    parentMap[child.vertex_id] = current.vertex_id
+    # while queue and not success:
+    #     current = queue.popleft()   
+    #     if current == destination:
+    #         success = True
+    #         break
+    #     else:
+    #         print(current)
+    #         for child in graph[current]:
+    #             if child not in visited:
+    #                 queue.append(child)
+    #                 visited.append(child)
+    #                 parentMap[child.vertex_id] = current.vertex_id
         
-    curr_id = current.vertex_id
-    if success:
-        while curr_id != start.vertex_id:
-            solution.append(curr_id)
-            curr_id = parentMap[curr_id]
-        solution.append(curr_id)
-        solution.reverse()
-        return solution, "success"
-    else:
-        return solution, "failure"
+    # curr_id = current.vertex_id
+    # if success:
+    #     while curr_id != start.vertex_id:
+    #         solution.append(curr_id)
+    #         curr_id = parentMap[curr_id]
+    #     solution.append(curr_id)
+    #     solution.reverse()
+    #     return solution, "success"
+    # else:
+    #     return solution, "failure"
 
 def depth_first_search(graph, start, destination):
     parentMap = {}
@@ -117,3 +134,7 @@ def depth_first_search(graph, start, destination):
         return solution, "success"
     else:
         return solution, "failure"
+
+
+def a_star(graph, start, destination):
+    pass
