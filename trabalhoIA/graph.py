@@ -9,10 +9,7 @@ class Graph:
     no dict interior temos o vertice conectado com o valor do peso da aresta.
     """
 
-    def __init__(self, direcionado=True):
-        # self.V = 0
-        # self.node = defaultdict(int)
-        self.__direcionado = direcionado
+    def __init__(self):
         self.graph = defaultdict(dict)
 
     def __len__(self):
@@ -49,12 +46,13 @@ class Graph:
             self.graph[node_id] = {}
             return True
 
-    def addEdge(self, u, v, weight_=0, edgeID_=-1):
+    def add_edge(self, u, v, weight_=0, edgeID_=-1):
         """
         Conecta dois nos de id 'u' e 'v' atraves de uma arestas com um peso 'weight' associado.
         Caso os nos nao existam, os mesmos sao criados.
         O paramêtro 'inplace' especifica se, caso um dos nós não exista, os mesmos sejam criados.
         """
+
         if u not in self.graph:
             self.graph[u] = {}
 
@@ -62,66 +60,24 @@ class Graph:
         self.graph[u][v] = edge(edgeID=edgeID_, weight=weight_)
         # self.graph[u][v] = weight
 
-        if not self.__direcionado:
-            if v not in self.graph:
-                self.graph[v] = {}
-
-            self.graph[v][u] = edge(edgeID=edgeID_, weight=weight_)
-            # self.graph[v][u] = weight
+        if v not in self.graph:
+            self.graph[v] = {}
+        self.graph[v][u] = edge(edgeID=edgeID_, weight=weight_)
+        # self.graph[v][u] = weight
 
         return True
 
     def plotGraph(self):
         plot = "######################\n"
         for node in self.graph.items():
-            plot += f"{node[0]} -> "
+            # print(node)
+            plot += f"{node[0].vertex_id} -> "
             for edge in node[1].items():
-                plot += f"({edge[0]}, {edge[1].weight}), "
+                plot += f"({edge[0].vertex_id}, {edge[1].weight})"
+
+                if edge != list(node[1].items())[-1]:
+                    plot += ','
+
             plot += "\n"
         plot += "######################\n"
         return plot
-
-    def BFS(self, s):
-        visited = [False] * (len(self.graph))
-        queue = deque()
-        queue.append(s)
-        visited[s] = True
-
-        while queue:
-            s = queue.popleft()
-            print(s, end=" ")
-
-            for i in self.graph[s]:
-                if visited[i] == False:  # not visited[i] talvez funcione também
-                    queue.append(i)
-                    visited[i] = True
-
-    def DFS(self, s):
-        visited = [False] * (len(self.graph))
-        stack = []
-        stack.append(s)
-
-        while stack:
-            s = stack[-1]
-            stack.pop()
-
-            if not visited[s]:  # not visited[s] talvez funcione também
-                print(s, end=" ")
-                visited[s] = True
-
-            for i in self.graph[s]:
-                if not visited[i]:  # not visited[i] talvez funcione também
-                    stack.append(i)
-
-
-if __name__ == "__main__":
-    G = Graph(False)
-    G.insertNode("A")
-    G.insertNode("B")
-    G.addEdge("A", "B", 10)
-
-    print(len(G))
-    print(G["B"])
-    print(G.searchNode("A"))
-    print(G.graph)
-    print(G)

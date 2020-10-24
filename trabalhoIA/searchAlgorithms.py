@@ -1,6 +1,7 @@
 from graph import Graph
 from utils import map_Generator
 from queue import Queue
+from collections import defaultdict, deque, namedtuple
 import random
 import string
 
@@ -85,6 +86,77 @@ def backTracking(graph, start_node_id, terminal_node_id):
                 solution.pop()
 
     return solution, "SUCCESS" if success else "FAILURE"
+
+
+def breadth_first_search(graph, start, destination):
+    parentMap = {}
+    visited = []
+    solution = []
+    current = start
+    queue = deque()
+    queue.append(current)
+    visited.append(current)
+    success = False
+
+    while queue and not success:
+        current = queue.popleft()
+        if current == destination:
+            success = True
+            break
+        else:
+            for child in graph[current]:
+                if child not in visited:
+                    queue.append(child)
+                    visited.append(child)
+                    parentMap[child.vertex_id] = current.vertex_id
+
+    curr_id = current.vertex_id
+    if success:
+        while curr_id != start.vertex_id:
+            solution.append(curr_id)
+            curr_id = parentMap[curr_id]
+        solution.append(curr_id)
+        solution.reverse()
+        return solution, "success"
+    else:
+        return solution, "failure"
+
+
+def depth_first_search(graph, start, destination):
+    parentMap = {}
+    visited = []
+    stack = []
+    solution = []
+    current = start
+    stack.append(current)
+    success = False
+
+    while stack:
+        current = stack[-1]
+        stack.pop()
+
+        if current not in visited:
+            visited.append(current)
+
+        if current == destination:
+            success = True
+            break
+
+        for child in graph[current]:
+            if child not in visited:
+                stack.append(child)
+                parentMap[child.vertex_id] = current.vertex_id
+
+    curr_id = current.vertex_id
+    if success:
+        while curr_id != start.vertex_id:
+            solution.append(curr_id)
+            curr_id = parentMap[curr_id]
+        solution.append(curr_id)
+        solution.reverse()
+        return solution, "success"
+    else:
+        return solution, "failure"
 
 
 if __name__ == "__main__":
