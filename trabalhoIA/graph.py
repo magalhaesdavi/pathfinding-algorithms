@@ -17,7 +17,7 @@ class Graph:
 
     def __getitem__(self, key):
         if key not in self.graph:
-            raise KeyError(f"Key {key} not in the graph.")
+            raise KeyError("Key {} not in the graph.".format(key))
         return self.graph[key]
 
     def __iter__(self):
@@ -56,8 +56,6 @@ class Graph:
         if u not in self.graph:
             self.graph[u] = {}
 
-
-        # ESSE É O JEITO CERTO, NÃO TENTE ME CONFRONTAR
         edge = namedtuple("Edge", ["edgeID", "weight"])
         self.graph[u][v] = edge(edgeID=edgeID_, weight=weight_)
         # self.graph[u][v] = weight
@@ -76,7 +74,7 @@ class Graph:
             plot += f"{node[0].vertex_id} -> "
             for edge in node[1].items():
                 plot += f"({edge[0].vertex_id}, {edge[1].weight})"
-                
+
                 if edge != list(node[1].items())[-1]:
                     plot += ','
 
