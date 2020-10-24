@@ -5,6 +5,7 @@ from collections import defaultdict, deque, namedtuple
 import random
 import string
 import time
+import timeit
 
 
 def irrevocabile(graph, start_id, end_id):
@@ -96,20 +97,23 @@ def backTracking(graph, start_id, end_id):
 
     return [ node.vertex_id for node in solution ], "SUCCESS" if success else "FAILURE"
 
+def breadth_first_search(graph, start_id, end_id):
 
-def breadth_first_search(graph, start, destination):
+    start_node = [ node for node in list(graph.graph.keys()) if node.vertex_id == start_id ][0]
+    end_node = [ node for node in list(graph.graph.keys()) if node.vertex_id == end_id ][0]
+
     parentMap = {}
     visited = []
     solution = []
-    current = start
+    current = start_node
     queue = deque()
     queue.append(current)
     visited.append(current)
     success = False
-
+        
     while queue and not success:
-        current = queue.popleft()
-        if current == destination:
+        current = queue.popleft()   
+        if current == end_node:
             success = True
             break
         else:
@@ -118,10 +122,10 @@ def breadth_first_search(graph, start, destination):
                     queue.append(child)
                     visited.append(child)
                     parentMap[child.vertex_id] = current.vertex_id
-
+        
     curr_id = current.vertex_id
     if success:
-        while curr_id != start.vertex_id:
+        while curr_id != start_node.vertex_id:
             solution.append(curr_id)
             curr_id = parentMap[curr_id]
         solution.append(curr_id)
@@ -130,13 +134,16 @@ def breadth_first_search(graph, start, destination):
     else:
         return solution, "failure"
 
+def depth_first_search(graph, start_id, end_id):
 
-def depth_first_search(graph, start, destination):
+    start_node = [ node for node in list(graph.graph.keys()) if node.vertex_id == start_id ][0]
+    end_node = [ node for node in list(graph.graph.keys()) if node.vertex_id == end_id ][0]
+
     parentMap = {}
     visited = []
     stack = []
     solution = []
-    current = start
+    current = start_node
     stack.append(current)
     success = False
 
@@ -147,7 +154,7 @@ def depth_first_search(graph, start, destination):
         if current not in visited:
             visited.append(current)
 
-        if current == destination:
+        if current == end_node:
             success = True
             break
 
@@ -158,7 +165,7 @@ def depth_first_search(graph, start, destination):
 
     curr_id = current.vertex_id
     if success:
-        while curr_id != start.vertex_id:
+        while curr_id != start_node.vertex_id:
             solution.append(curr_id)
             curr_id = parentMap[curr_id]
         solution.append(curr_id)
@@ -167,6 +174,8 @@ def depth_first_search(graph, start, destination):
     else:
         return solution, "failure"
 
+def a_star(graph, start, destination):
+    pass
 
 if __name__ == "__main__":
     G = Graph()
@@ -182,5 +191,7 @@ if __name__ == "__main__":
         G.add_edge(node1, node2, weight)
 
     print(G)
-    print(backTracking(G, "B", "Z"))
-    print(irrevocabile(G, "B", "Z"))
+    print(depth_first_search(G, 'B', 'Z'))
+    print(backTracking(G, 'B', 'Z'))
+    print(irrevocabile(G, 'B', 'Z'))
+    
