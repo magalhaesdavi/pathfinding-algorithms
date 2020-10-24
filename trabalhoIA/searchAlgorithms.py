@@ -7,10 +7,10 @@ import string
 import time
 
 
-def irrevocabile(graph, start_node_id, terminal_node_id):
+def irrevocabile(graph, start_id, end_id):
 
-    start_node = [ node for node in list(graph.graph.keys()) if node.vertex_id == start_node_id ][0]
-    terminal_node = [ node for node in list(graph.graph.keys()) if node.vertex_id == terminal_node_id ][0]
+    start_node = [ node for node in list(graph.graph.keys()) if node.vertex_id == start_id ][0]
+    terminal_node = [ node for node in list(graph.graph.keys()) if node.vertex_id == end_id ][0]
 
     # Inicializando flag de sucesso e fracasso
     success = False
@@ -42,18 +42,18 @@ def irrevocabile(graph, start_node_id, terminal_node_id):
             break
 
         solution.append(chsn_node)
-        if chsn_node.vertex_id == terminal_node_id:
+        if chsn_node.vertex_id == end_id:
             success = True
             break
 
     return [ node.vertex_id for node in solution ], "SUCCESS" if success else "FAILURE"
 
 
-def backTracking(graph, start_node_id, terminal_node_id):
+def backTracking(graph, start_id, end_id):
 
 
-    start_node = [ node for node in list(graph.graph.keys()) if node.vertex_id == start_node_id ][0]
-    terminal_node = [ node for node in list(graph.graph.keys()) if node.vertex_id == terminal_node_id ][0]
+    start_node = [ node for node in list(graph.graph.keys()) if node.vertex_id == start_id ][0]
+    terminal_node = [ node for node in list(graph.graph.keys()) if node.vertex_id == end_id ][0]
 
     # Inicializando flag de sucesso e fracasso
     success = False
@@ -82,12 +82,12 @@ def backTracking(graph, start_node_id, terminal_node_id):
             if chsn_node not in solution:
                 solution.append(chsn_node)
                 # Se o proximo no for o no terminal, ativamos a flag de sucesso e terminamos o loop
-                if chsn_node.vertex_id == terminal_node_id:
+                if chsn_node.vertex_id == end_id:
                     success = True
                     break
         else:
             # Se voltarmos para o no inicial, significa que nao ha mais nos para serem explorados
-            if current_node.vertex_id == start_node_id:
+            if current_node.vertex_id == start_id:
                 fail = True
                 break
             else:
