@@ -6,7 +6,7 @@ from itertools import combinations
 def calculate_dist(cords1, cords2):
     return math.sqrt( (cords1[0] - cords2[0])**2 + (cords1[1] - cords2[1])**2 )
 
-def map_generator(available_nodes, density=0.5, weights_range=(0, 100), cartesian=True):
+def map_generator(available_nodes, density=0.5, weights_range=(0, 100)):
     """
     Gera uma lista de conexoes com pesos no intervalo 'weights_range'
     baseado numa lista de ids em 'available_nodes', a variavel 'density'

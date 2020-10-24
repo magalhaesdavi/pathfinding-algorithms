@@ -1,17 +1,22 @@
 from graph import Graph
-from utils import map_Generator
+from utils import map_generator
 from queue import Queue
 from collections import defaultdict, deque, namedtuple
 import random
 import string
+import time
 
 
 def irrevocabile(graph, start_node_id, terminal_node_id):
+
+    start_node = [ node for node in list(graph.graph.keys()) if node.vertex_id == start_node_id ][0]
+    terminal_node = [ node for node in list(graph.graph.keys()) if node.vertex_id == terminal_node_id ][0]
+
     # Inicializando flag de sucesso e fracasso
     success = False
     fail = False
-    solution = [start_node_id]
-    visited = [start_node_id]
+    solution = [start_node]
+    visited = [start_node]
 
     while not success or not fail:
         ok = False
@@ -37,21 +42,25 @@ def irrevocabile(graph, start_node_id, terminal_node_id):
             break
 
         solution.append(chsn_node)
-        if chsn_node == terminal_node_id:
+        if chsn_node.vertex_id == terminal_node_id:
             success = True
             break
 
-    return solution, "SUCCESS" if success else "FAILURE"
+    return [ node.vertex_id for node in solution ], "SUCCESS" if success else "FAILURE"
 
 
 def backTracking(graph, start_node_id, terminal_node_id):
+
+
+    start_node = [ node for node in list(graph.graph.keys()) if node.vertex_id == start_node_id ][0]
+    terminal_node = [ node for node in list(graph.graph.keys()) if node.vertex_id == terminal_node_id ][0]
 
     # Inicializando flag de sucesso e fracasso
     success = False
     fail = False
     # A solucao sera descoberta manipulando uma "pilha"
-    solution = [start_node_id]
-    visited = [start_node_id]
+    solution = [start_node]
+    visited = [start_node]
 
     while not success or not fail:
         # Verificamos se e possivel aplicar regras no ultimo no na pilha
@@ -73,19 +82,19 @@ def backTracking(graph, start_node_id, terminal_node_id):
             if chsn_node not in solution:
                 solution.append(chsn_node)
                 # Se o proximo no for o no terminal, ativamos a flag de sucesso e terminamos o loop
-                if chsn_node == terminal_node_id:
+                if chsn_node.vertex_id == terminal_node_id:
                     success = True
                     break
         else:
             # Se voltarmos para o no inicial, significa que nao ha mais nos para serem explorados
-            if current_node == start_node_id:
+            if current_node.vertex_id == start_node_id:
                 fail = True
                 break
             else:
                 # Senao, voltamos na "arvore" de busca
                 solution.pop()
 
-    return solution, "SUCCESS" if success else "FAILURE"
+    return [ node.vertex_id for node in solution ], "SUCCESS" if success else "FAILURE"
 
 
 def breadth_first_search(graph, start, destination):
@@ -160,12 +169,18 @@ def depth_first_search(graph, start, destination):
 
 
 if __name__ == "__main__":
-    G = Graph(False)
+    G = Graph()
+
     nodes_list = list(string.ascii_uppercase)
-    test_map = map_Generator(nodes_list, 1.1)
-    print(test_map)
-    for conection in test_map:
-        G.addEdge(conection[0], conection[1], conection[2])
+    test_map = map_generator(nodes_list, 0.1)
+
+    vertex = namedtuple("Vertex", ["vertex_id", "vertex_x", "vertex_y"])
+    for connection in test_map:
+        node1 = vertex(vertex_id=connection[0][0], vertex_x=connection[0][1][0], vertex_y=connection[0][1][1])
+        node2 = vertex(vertex_id=connection[1][0], vertex_x=connection[1][1][0], vertex_y=connection[1][1][1])
+        weight = connection[2]
+        G.add_edge(node1, node2, weight)
+
     print(G)
     print(backTracking(G, "B", "Z"))
     print(irrevocabile(G, "B", "Z"))
