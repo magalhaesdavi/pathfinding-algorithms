@@ -1,59 +1,111 @@
-# from graph import Graph
+from graph import Graph
+from utils import map_generator
 from queue import Queue
 from collections import defaultdict, deque, namedtuple
 import random
+import string
+import time
+import timeit
 
-def backTracking(graph, start_node_id, terminal_node_id):
+
+def irrevocabile(graph, start_id, end_id):
+
+    start_node = [ node for node in list(graph.graph.keys()) if node.vertex_id == start_id ][0]
+    terminal_node = [ node for node in list(graph.graph.keys()) if node.vertex_id == end_id ][0]
+
+    # Inicializando flag de sucesso e fracasso
+    success = False
+    fail = False
+    solution = [start_node]
+    visited = [start_node]
+
+    while not success or not fail:
+        ok = False
+        current_node = solution[-1]
+        edges = list(graph[current_node].keys())
+
+        while len(edges) > 0:
+
+            # Nesta implementacao a escolha da regra/edge é por ordem alfabética ou crescente (se forem numeros)
+            edges.sort()
+            chsn_node = edges[0]
+
+            if chsn_node not in visited:
+                visited.append(chsn_node)
+                if chsn_node not in solution:
+                    ok = True
+                    break
+            else:
+                del edges[0]
+
+        if not ok:
+            fail = True
+            break
+
+        solution.append(chsn_node)
+        if chsn_node.vertex_id == end_id:
+            success = True
+            break
+
+    return [ node.vertex_id for node in solution ], "SUCCESS" if success else "FAILURE"
+
+
+def backTracking(graph, start_id, end_id):
+
+
+    start_node = [ node for node in list(graph.graph.keys()) if node.vertex_id == start_id ][0]
+    terminal_node = [ node for node in list(graph.graph.keys()) if node.vertex_id == end_id ][0]
+
     # Inicializando flag de sucesso e fracasso
     success = False
     fail = False
     # A solucao sera descoberta manipulando uma "pilha"
-    solution = []
-    tree = []
-    # Primeiro selecionamos o no de partida
-    # startNode = graph.buscaNo(start_node_id)
-    # E colocamos ele na pilha de solucao
-    solution.append(start_node_id)
-    tree.append(start_node_id)
-
-    i = 0
+    solution = [start_node]
+    visited = [start_node]
 
     while not success or not fail:
         # Verificamos se e possivel aplicar regras no ultimo no na pilha
-        currentNode = tree[-1]
+        current_node = solution[-1]
+        edges = list(G[current_node].keys())
 
-        # if len(currentNode.arestas) > 0:
-        if len(graph[start_node_id]) > 0:
-            randN = random.randint(0, len(graph[start_node_id]) - 1)
-            # Nesta implementacao a escolha da regra sera aleatoria
-            # if currentNode.arestas[randN].getNoAdj() not in solution:
-            if graph[currentNode][randN] not in solution:
-                # nextNode = graph.buscaNo(currentNode.arestas[randN].getNoAdj())
-                nextNode = graph[currentNode][randN]
-                tree.append(nextNode)
-                solution.append(nextNode)
+        # Se ainda existe pelo menos uma aresta que ainda não foi visitada entramos no if
+        if not all(node in visited for node in edges):
+
+            # Nesta implementacao a escolha da regra/edge é por ordem alfabética ou crescente (se forem numeros)
+            edges.sort()
+            chsn_node = edges[0]
+            while chsn_node in visited:
+                chsn_node = edges[edges.index(chsn_node) + 1]
+
+            if chsn_node not in visited:
+                visited.append(chsn_node)
+
+            if chsn_node not in solution:
+                solution.append(chsn_node)
                 # Se o proximo no for o no terminal, ativamos a flag de sucesso e terminamos o loop
-                if nextNode == terminal_node_id:
+                if chsn_node.vertex_id == end_id:
                     success = True
                     break
-
+        else:
+            # Se voltarmos para o no inicial, significa que nao ha mais nos para serem explorados
+            if current_node.vertex_id == start_id:
+                fail = True
+                break
             else:
-                # Se voltarmos para o no inicial, significa que nao ha mais nos para serem explorados
-                if currentNode == start_node_id:
-                    fail = True
-                    break
-                else:
-                    # Senao, voltamos na "arvore" de busca
-                    tree.pop()
-                    solution.pop()
+                # Senao, voltamos na "arvore" de busca
+                solution.pop()
 
-    return solution, "SUCCESS" if success else "FAILURE"
+    return [ node.vertex_id for node in solution ], "SUCCESS" if success else "FAILURE"
 
-def breadth_first_search(graph, start, destination):
+def breadth_first_search(graph, start_id, end_id):
+
+    start_node = [ node for node in list(graph.graph.keys()) if node.vertex_id == start_id ][0]
+    end_node = [ node for node in list(graph.graph.keys()) if node.vertex_id == end_id ][0]
+
     parentMap = {}
     visited = []
     solution = []
-    current = start
+    current = start_node
     queue = deque()
     queue.append(current)
     visited.append(current)
@@ -61,7 +113,7 @@ def breadth_first_search(graph, start, destination):
         
     while queue and not success:
         current = queue.popleft()   
-        if current == destination:
+        if current == end_node:
             success = True
             break
         else:
@@ -73,7 +125,7 @@ def breadth_first_search(graph, start, destination):
         
     curr_id = current.vertex_id
     if success:
-        while curr_id != start.vertex_id:
+        while curr_id != start_node.vertex_id:
             solution.append(curr_id)
             curr_id = parentMap[curr_id]
         solution.append(curr_id)
@@ -82,12 +134,16 @@ def breadth_first_search(graph, start, destination):
     else:
         return solution, "failure"
 
-def depth_first_search(graph, start, destination):
+def depth_first_search(graph, start_id, end_id):
+
+    start_node = [ node for node in list(graph.graph.keys()) if node.vertex_id == start_id ][0]
+    end_node = [ node for node in list(graph.graph.keys()) if node.vertex_id == end_id ][0]
+
     parentMap = {}
     visited = []
     stack = []
     solution = []
-    current = start
+    current = start_node
     stack.append(current)
     success = False
 
@@ -95,21 +151,21 @@ def depth_first_search(graph, start, destination):
         current = stack[-1]
         stack.pop()
 
-        if current not in visited:  
+        if current not in visited:
             visited.append(current)
 
-        if current == destination:
+        if current == end_node:
             success = True
             break
 
         for child in graph[current]:
-            if child not in visited: 
+            if child not in visited:
                 stack.append(child)
                 parentMap[child.vertex_id] = current.vertex_id
-        
+
     curr_id = current.vertex_id
     if success:
-        while curr_id != start.vertex_id:
+        while curr_id != start_node.vertex_id:
             solution.append(curr_id)
             curr_id = parentMap[curr_id]
         solution.append(curr_id)
@@ -117,3 +173,25 @@ def depth_first_search(graph, start, destination):
         return solution, "success"
     else:
         return solution, "failure"
+
+def a_star(graph, start, destination):
+    pass
+
+if __name__ == "__main__":
+    G = Graph()
+
+    nodes_list = list(string.ascii_uppercase)
+    test_map = map_generator(nodes_list, 0.1)
+
+    vertex = namedtuple("Vertex", ["vertex_id", "vertex_x", "vertex_y"])
+    for connection in test_map:
+        node1 = vertex(vertex_id=connection[0][0], vertex_x=connection[0][1][0], vertex_y=connection[0][1][1])
+        node2 = vertex(vertex_id=connection[1][0], vertex_x=connection[1][1][0], vertex_y=connection[1][1][1])
+        weight = connection[2]
+        G.add_edge(node1, node2, weight)
+
+    print(G)
+    print(depth_first_search(G, 'B', 'Z'))
+    print(backTracking(G, 'B', 'Z'))
+    print(irrevocabile(G, 'B', 'Z'))
+    
