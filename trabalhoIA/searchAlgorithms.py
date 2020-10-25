@@ -194,4 +194,3 @@ if __name__ == "__main__":
     print(depth_first_search(G, 'B', 'Z'))
     print(backTracking(G, 'B', 'Z'))
     print(irrevocabile(G, 'B', 'Z'))
-    
