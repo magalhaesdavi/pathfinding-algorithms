@@ -196,10 +196,6 @@ def ordered_search(graph, start_id, end_id):
         current_node = top_q[1]
         current_path = top_q[2]
 
-        # print([node.vertex_id for node in visited])
-        # print(current_node.vertex_id)
-        # print("")
-
         if current_node.vertex_id == end_id:
             success = True
             solution = current_path
