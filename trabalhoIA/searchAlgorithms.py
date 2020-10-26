@@ -1,11 +1,12 @@
 from graph import Graph
-from utils import map_generator
-from queue import Queue
+from utils import map_generator, calculate_dist
+from queue import Queue, PriorityQueue
 from collections import defaultdict, deque, namedtuple
 import random
 import string
 import time
 import timeit
+import math
 
 
 def irrevocabile(graph, start_id, end_id):
@@ -174,6 +175,48 @@ def depth_first_search(graph, start_id, end_id):
     else:
         return solution, "failure"
 
+def ordered_search(graph, start_id, end_id):
+    start_node = [ node for node in list(graph.graph.keys()) if node.vertex_id == start_id ][0]
+    terminal_node = [ node for node in list(graph.graph.keys()) if node.vertex_id == end_id ][0]
+
+    success = False
+    fail = False
+
+    solution = []
+    visited = []
+
+    prority_queue = PriorityQueue()
+    path_to_goal = []
+    prority_queue.put((0, start_node, path_to_goal))
+
+    cost = 0
+
+    while not prority_queue.empty():
+        top_q = prority_queue.get()
+        current_node = top_q[1]
+        current_path = top_q[2]
+
+        # print([node.vertex_id for node in visited])
+        # print(current_node.vertex_id)
+        # print("")
+
+        if current_node.vertex_id == end_id:
+            success = True
+            solution = current_path
+        else:
+            if not current_node in visited:
+                edges = list(graph[current_node].keys())
+                edges.sort(key=lambda  edge: cost + graph[current_node][edge].weight)
+                cost += graph[current_node][edges[0]].weight
+
+                while len(edges) > 0:
+                    edge = edges.pop()
+                    prority_queue.put((cost + graph[current_node][edge].weight, edge, current_path + [current_node]))
+
+                visited.append(current_node)
+
+    return [ node.vertex_id for node in solution + [terminal_node] ], "SUCCESS" if success else "FAILURE"
+
 def a_star(graph, start, destination):
     pass
 
@@ -191,7 +234,8 @@ if __name__ == "__main__":
         G.add_edge(node1, node2, weight)
 
     print(G)
-    print(depth_first_search(G, 'B', 'Z'))
-    print(backTracking(G, 'B', 'Z'))
     print(irrevocabile(G, 'B', 'Z'))
+    print(backTracking(G, 'B', 'Z'))
+    print(depth_first_search(G, 'B', 'Z'))
+    print(ordered_search(G, 'B', 'Z'))
     
