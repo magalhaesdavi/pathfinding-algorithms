@@ -1,12 +1,12 @@
-from graph import Graph
-from utils import map_generator
-from queue import Queue
 from collections import defaultdict, deque, namedtuple
-import random
+from queue import Queue
 import string
-import time
+import random
 import timeit
-
+from graph import Graph
+import utils
+# from utils import map_generator
+# from utils import find_smaller
 
 def irrevocabile(graph, start_id, end_id):
 
@@ -48,7 +48,6 @@ def irrevocabile(graph, start_id, end_id):
             break
 
     return [ node.vertex_id for node in solution ], "SUCCESS" if success else "FAILURE"
-
 
 def backTracking(graph, start_id, end_id):
 
@@ -174,14 +173,60 @@ def depth_first_search(graph, start_id, end_id):
     else:
         return solution, "failure"
 
-def a_star(graph, start, destination):
-    pass
+def a_star(graph, start_id, end_id):
+    
+    start_node = [ node for node in list(graph.graph.keys()) if node.vertex_id == start_id ][0]
+    end_node = [ node for node in list(graph.graph.keys()) if node.vertex_id == end_id ][0]
+
+    openList = {}
+    closedList = {}
+
+    #A lista contém respectivamente: g(custo acumulado), funcao h da heuristica e funcao f(g + h)
+    openList[start_node] = [0, utils.heuristic(start_node, end_node), 0 + utils.heuristic(start_node, end_node)]
+
+    success = False
+    solution = []
+    parentMap = {}
+
+    while openList:
+        current = utils.find_smaller(openList)
+        closedList[current] = openList[current]
+        del openList[current]
+        if current == end_node:
+            success = True
+            break
+        for child in graph[current]:
+            if child in closedList:
+                continue
+            if child in openList:
+                new_g = closedList[current][0] + graph[current][child].weight
+                if openList[child][0] > new_g:
+                    openList[child][0] = new_g
+                    openList[child][2] = new_g + openList[child][1]
+                    parentMap[child.vertex_id] = current.vertex_id
+            else:
+                child_g = closedList[current][0] + graph[current][child].weight
+                child_h = utils.heuristic(child, end_node)
+                openList[child] = [child_g, child_h, child_g + child_h]
+                parentMap[child.vertex_id] = current.vertex_id
+    
+    curr_id = current.vertex_id
+    if success:
+        while curr_id != start_node.vertex_id:
+            solution.append(curr_id)
+            curr_id = parentMap[curr_id]
+        solution.append(curr_id)
+        solution.reverse()
+        return solution, "success"
+    else:
+        return solution, "failure"
 
 if __name__ == "__main__":
+
     G = Graph()
 
     nodes_list = list(string.ascii_uppercase)
-    test_map = map_generator(nodes_list, 0.1)
+    test_map = utils.map_generator(nodes_list, 0.1)
 
     vertex = namedtuple("Vertex", ["vertex_id", "vertex_x", "vertex_y"])
     for connection in test_map:
@@ -189,9 +234,24 @@ if __name__ == "__main__":
         node2 = vertex(vertex_id=connection[1][0], vertex_x=connection[1][1][0], vertex_y=connection[1][1][1])
         weight = connection[2]
         G.add_edge(node1, node2, weight)
+    g = Graph()
 
-    print(G)
-    print(depth_first_search(G, 'B', 'Z'))
-    print(backTracking(G, 'B', 'Z'))
-    print(irrevocabile(G, 'B', 'Z'))
-    
+    # vertex = namedtuple("Vertex", ["vertex_id", "vertex_x", "vertex_y"])
+    # a = vertex(vertex_id = 'A', vertex_x = 4, vertex_y = 0)
+    # b = vertex(vertex_id = 'B', vertex_x = 11, vertex_y = 0)
+    # c = vertex(vertex_id = 'C', vertex_x = 6, vertex_y = 0)
+    # d = vertex(vertex_id = 'D', vertex_x = 8, vertex_y = 0)
+    # e = vertex(vertex_id = 'E', vertex_x = 7, vertex_y = 0)
+
+    # g.add_edge(a, b, 4)
+    # g.add_edge(a, c, 2)
+    # g.add_edge(b, c, 1)
+    # g.add_edge(b, d, 3)
+    # g.add_edge(c, d, 5)
+    # g.add_edge(c, e, 2)
+    # g.add_edge(d, e, 1)
+    print(G.graph)
+    # print(irrevocabile(G, 'B', 'Z'))
+    # print(backTracking(G, 'B', 'Z'))
+    # print(depth_first_search(G, 'B', 'Z'))
+    print(a_star(g, 'A', 'D'))
