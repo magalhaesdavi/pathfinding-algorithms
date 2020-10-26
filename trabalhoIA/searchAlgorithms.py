@@ -234,6 +234,7 @@ if __name__ == "__main__":
         G.add_edge(node1, node2, weight)
 
     print(G)
+
     print(irrevocabile(G, 'B', 'Z'))
     print(backTracking(G, 'B', 'Z'))
     print(depth_first_search(G, 'B', 'Z'))
