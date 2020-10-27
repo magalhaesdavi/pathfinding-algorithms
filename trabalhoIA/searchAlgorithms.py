@@ -278,9 +278,9 @@ if __name__ == "__main__":
 
     print(G)
 
-    print(irrevocabile(G, 'B', 'Z'))
-    print(backTracking(G, 'B', 'Z'))
-    print(depth_first_search(G, 'B', 'Z'))
+    # print(irrevocabile(G, 'B', 'Z'))
+    # print(backTracking(G, 'B', 'Z'))
+    # print(depth_first_search(G, 'B', 'Z'))
     print(uniform_cost_search(G, 'B', 'Z'))
     
 
