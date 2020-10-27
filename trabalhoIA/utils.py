@@ -1,7 +1,6 @@
 import random
 import numpy as np
 import math
-import searchAlgorithms
 from itertools import combinations
 
 def calculate_dist(cords1, cords2):
