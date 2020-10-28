@@ -175,7 +175,7 @@ def depth_first_search(graph, start_id, end_id):
     else:
         return solution, "failure"
 
-def ordered_search(graph, start_id, end_id):
+def uniform_cost_search(graph, start_id, end_id):
     start_node = [ node for node in list(graph.graph.keys()) if node.vertex_id == start_id ][0]
     terminal_node = [ node for node in list(graph.graph.keys()) if node.vertex_id == end_id ][0]
 
@@ -222,7 +222,7 @@ if __name__ == "__main__":
     nodes_list = list(string.ascii_uppercase)
     test_map = map_generator(nodes_list, 0.1)
     vertex = namedtuple("Vertex", ["vertex_id", "vertex_x", "vertex_y"])
-    
+
     for connection in test_map:
         node1 = vertex(vertex_id=connection[0][0], vertex_x=connection[0][1][0], vertex_y=connection[0][1][1])
         node2 = vertex(vertex_id=connection[1][0], vertex_x=connection[1][1][0], vertex_y=connection[1][1][1])
@@ -234,5 +234,5 @@ if __name__ == "__main__":
     print(irrevocabile(G, 'B', 'Z'))
     print(backTracking(G, 'B', 'Z'))
     print(depth_first_search(G, 'B', 'Z'))
-    print(ordered_search(G, 'B', 'Z'))
+    print(uniform_cost_search(G, 'B', 'Z'))
     
