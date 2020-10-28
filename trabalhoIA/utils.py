@@ -41,3 +41,12 @@ def map_generator(available_nodes, density=0.5, weights_range=(0, 100)):
 
     print(f"Mapa gerado com {len(map_data)} conexoes")
     return map_data
+
+def find_smaller(d):
+    # return min(d, key=d.get)
+    # return min(d, key = lambda t: t[2])
+    return min(d.items(), key=lambda k: k[1][2])[0]
+
+def heuristic(vertex_a, vertex_b):
+    return math.sqrt( (vertex_b.vertex_x - vertex_a.vertex_x)**2 + 
+        (vertex_b.vertex_y - vertex_a.vertex_y)**2 )
