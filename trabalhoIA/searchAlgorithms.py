@@ -221,8 +221,8 @@ if __name__ == "__main__":
 
     nodes_list = list(string.ascii_uppercase)
     test_map = map_generator(nodes_list, 0.1)
-
     vertex = namedtuple("Vertex", ["vertex_id", "vertex_x", "vertex_y"])
+    
     for connection in test_map:
         node1 = vertex(vertex_id=connection[0][0], vertex_x=connection[0][1][0], vertex_y=connection[0][1][1])
         node2 = vertex(vertex_id=connection[1][0], vertex_x=connection[1][1][0], vertex_y=connection[1][1][1])
