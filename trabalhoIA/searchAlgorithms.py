@@ -198,7 +198,7 @@ def ordered_search(graph, start_id, end_id):
 
         if current_node.vertex_id == end_id:
             success = True
-            solution = current_path
+            solution = current_path + [terminal_node]
         else:
             if not current_node in visited:
                 edges = list(graph[current_node].keys())
@@ -211,7 +211,7 @@ def ordered_search(graph, start_id, end_id):
 
                 visited.append(current_node)
 
-    return [ node.vertex_id for node in solution + [terminal_node] ], "SUCCESS" if success else "FAILURE"
+    return [ node.vertex_id for node in solution ], "SUCCESS" if success else "FAILURE"
 
 def a_star(graph, start, destination):
     pass
