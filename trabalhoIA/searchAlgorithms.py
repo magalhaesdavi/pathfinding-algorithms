@@ -214,6 +214,9 @@ def uniform_cost_search(graph, start_id, end_id):
 
     return [ node.vertex_id for node in solution + [terminal_node] ], "SUCCESS" if success else "FAILURE"
 
+def greedy(graph, start_id, end_id):
+    pass
+
 def a_star(graph, start_id, end_id):
     
     start_node = [ node for node in list(graph.graph.keys()) if node.vertex_id == start_id ][0]
