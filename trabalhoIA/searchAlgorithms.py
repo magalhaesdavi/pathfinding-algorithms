@@ -1,18 +1,20 @@
-from graph import Graph
-from utils import map_generator, calculate_dist
-from queue import Queue, PriorityQueue
 from collections import defaultdict, deque, namedtuple
+from queue import Queue, PriorityQueue
+import math
 import random
 import string
-import time
 import timeit
-import math
+
+from graph import Graph
+import utils
+# from utils import map_generator
+# from utils import find_smaller
+# from utils import map_generator, calculate_dist
 
 
 def irrevocabile(graph, start_id, end_id):
 
-    start_node = [ node for node in list(graph.graph.keys()) if node.vertex_id == start_id ][0]
-    terminal_node = [ node for node in list(graph.graph.keys()) if node.vertex_id == end_id ][0]
+    start_node = [node for node in list(graph.graph.keys()) if node.vertex_id == start_id][0]
 
     # Inicializando flag de sucesso e fracasso
     success = False
@@ -29,11 +31,11 @@ def irrevocabile(graph, start_id, end_id):
 
             # Nesta implementacao a escolha da regra/edge é por ordem alfabética ou crescente (se forem numeros)
             edges.sort()
-            chsn_node = edges[0]
+            chosen_node = edges[0]
 
-            if chsn_node not in visited:
-                visited.append(chsn_node)
-                if chsn_node not in solution:
+            if chosen_node not in visited:
+                visited.append(chosen_node)
+                if chosen_node not in solution:
                     ok = True
                     break
             else:
@@ -43,19 +45,17 @@ def irrevocabile(graph, start_id, end_id):
             fail = True
             break
 
-        solution.append(chsn_node)
-        if chsn_node.vertex_id == end_id:
+        solution.append(chosen_node)
+        if chosen_node.vertex_id == end_id:
             success = True
             break
 
-    return [ node.vertex_id for node in solution ], "SUCCESS" if success else "FAILURE"
+    return [node.vertex_id for node in solution], "SUCCESS" if success else "FAILURE"
 
 
 def backTracking(graph, start_id, end_id):
 
-
-    start_node = [ node for node in list(graph.graph.keys()) if node.vertex_id == start_id ][0]
-    terminal_node = [ node for node in list(graph.graph.keys()) if node.vertex_id == end_id ][0]
+    start_node = [node for node in list(graph.graph.keys()) if node.vertex_id == start_id][0]
 
     # Inicializando flag de sucesso e fracasso
     success = False
@@ -74,17 +74,17 @@ def backTracking(graph, start_id, end_id):
 
             # Nesta implementacao a escolha da regra/edge é por ordem alfabética ou crescente (se forem numeros)
             edges.sort()
-            chsn_node = edges[0]
-            while chsn_node in visited:
-                chsn_node = edges[edges.index(chsn_node) + 1]
+            chosen_node = edges[0]
+            while chosen_node in visited:
+                chosen_node = edges[edges.index(chosen_node) + 1]
 
-            if chsn_node not in visited:
-                visited.append(chsn_node)
+            if chosen_node not in visited:
+                visited.append(chosen_node)
 
-            if chsn_node not in solution:
-                solution.append(chsn_node)
+            if chosen_node not in solution:
+                solution.append(chosen_node)
                 # Se o proximo no for o no terminal, ativamos a flag de sucesso e terminamos o loop
-                if chsn_node.vertex_id == end_id:
+                if chosen_node.vertex_id == end_id:
                     success = True
                     break
         else:
@@ -96,12 +96,13 @@ def backTracking(graph, start_id, end_id):
                 # Senao, voltamos na "arvore" de busca
                 solution.pop()
 
-    return [ node.vertex_id for node in solution ], "SUCCESS" if success else "FAILURE"
+    return [node.vertex_id for node in solution], "SUCCESS" if success else "FAILURE"
+
 
 def breadth_first_search(graph, start_id, end_id):
 
-    start_node = [ node for node in list(graph.graph.keys()) if node.vertex_id == start_id ][0]
-    end_node = [ node for node in list(graph.graph.keys()) if node.vertex_id == end_id ][0]
+    start_node = [node for node in list(graph.graph.keys()) if node.vertex_id == start_id][0]
+    end_node = [node for node in list(graph.graph.keys()) if node.vertex_id == end_id][0]
 
     parentMap = {}
     visited = []
@@ -111,9 +112,9 @@ def breadth_first_search(graph, start_id, end_id):
     queue.append(current)
     visited.append(current)
     success = False
-        
+
     while queue and not success:
-        current = queue.popleft()   
+        current = queue.popleft()
         if current == end_node:
             success = True
             break
@@ -123,7 +124,7 @@ def breadth_first_search(graph, start_id, end_id):
                     queue.append(child)
                     visited.append(child)
                     parentMap[child.vertex_id] = current.vertex_id
-        
+
     curr_id = current.vertex_id
     if success:
         while curr_id != start_node.vertex_id:
@@ -135,10 +136,11 @@ def breadth_first_search(graph, start_id, end_id):
     else:
         return solution, "failure"
 
+
 def depth_first_search(graph, start_id, end_id):
 
-    start_node = [ node for node in list(graph.graph.keys()) if node.vertex_id == start_id ][0]
-    end_node = [ node for node in list(graph.graph.keys()) if node.vertex_id == end_id ][0]
+    start_node = [node for node in list(graph.graph.keys()) if node.vertex_id == start_id][0]
+    end_node = [node for node in list(graph.graph.keys()) if node.vertex_id == end_id][0]
 
     parentMap = {}
     visited = []
@@ -175,9 +177,11 @@ def depth_first_search(graph, start_id, end_id):
     else:
         return solution, "failure"
 
+
 def uniform_cost_search(graph, start_id, end_id):
-    start_node = [ node for node in list(graph.graph.keys()) if node.vertex_id == start_id ][0]
-    terminal_node = [ node for node in list(graph.graph.keys()) if node.vertex_id == end_id ][0]
+
+    start_node = [node for node in list(graph.graph.keys()) if node.vertex_id == start_id][0]
+    end_node = [node for node in list(graph.graph.keys()) if node.vertex_id == end_id][0]
 
     success = False
     fail = False
@@ -198,31 +202,87 @@ def uniform_cost_search(graph, start_id, end_id):
 
         if current_node.vertex_id == end_id:
             success = True
-            solution = current_path + [terminal_node]
+            solution = current_path
         else:
             if not current_node in visited:
                 edges = list(graph[current_node].keys())
-                edges.sort(key=lambda  edge: cost + graph[current_node][edge].weight)
+                edges.sort(
+                    key=lambda edge: cost + graph[current_node][edge].weight
+                )
                 cost += graph[current_node][edges[0]].weight
 
                 while len(edges) > 0:
                     edge = edges.pop()
-                    prority_queue.put((cost + graph[current_node][edge].weight, edge, current_path + [current_node]))
+                    prority_queue.put(
+                        (cost + graph[current_node][edge].weight, edge, current_path + [current_node]))
 
                 visited.append(current_node)
 
-    return [ node.vertex_id for node in solution ], "SUCCESS" if success else "FAILURE"
+    return [node.vertex_id for node in solution + [end_node]], "SUCCESS" if success else "FAILURE"
 
-def a_star(graph, start, destination):
+
+def greedy(graph, start_id, end_id):
     pass
 
+
+def a_star(graph, start_id, end_id):
+
+    start_node = [node for node in list(graph.graph.keys()) if node.vertex_id == start_id][0]
+    end_node = [node for node in list(graph.graph.keys()) if node.vertex_id == end_id][0]
+
+    openList = {}
+    closedList = {}
+
+    # A lista contém respectivamente: g(custo acumulado), funcao h da heuristica e funcao f(g + h)
+    openList[start_node] = [0, utils.heuristic(
+        start_node, end_node), 0 + utils.heuristic(start_node, end_node)]
+
+    success = False
+    solution = []
+    parentMap = {}
+
+    while openList:
+        current = utils.find_smaller(openList)
+        closedList[current] = openList[current]
+        del openList[current]
+        if current == end_node:
+            success = True
+            break
+        for child in graph[current]:
+            if child in closedList:
+                continue
+            if child in openList:
+                new_g = closedList[current][0] + graph[current][child].weight
+                if openList[child][0] > new_g:
+                    openList[child][0] = new_g
+                    openList[child][2] = new_g + openList[child][1]
+                    parentMap[child.vertex_id] = current.vertex_id
+            else:
+                child_g = closedList[current][0] + graph[current][child].weight
+                child_h = utils.heuristic(child, end_node)
+                openList[child] = [child_g, child_h, child_g + child_h]
+                parentMap[child.vertex_id] = current.vertex_id
+
+    curr_id = current.vertex_id
+    if success:
+        while curr_id != start_node.vertex_id:
+            solution.append(curr_id)
+            curr_id = parentMap[curr_id]
+        solution.append(curr_id)
+        solution.reverse()
+        return solution, "success"
+    else:
+        return solution, "failure"
+
+
 if __name__ == "__main__":
+
     G = Graph()
 
     nodes_list = list(string.ascii_uppercase)
-    test_map = map_generator(nodes_list, 0.1)
-    vertex = namedtuple("Vertex", ["vertex_id", "vertex_x", "vertex_y"])
+    test_map = utils.map_generator(nodes_list, 0.1)
 
+    vertex = namedtuple("Vertex", ["vertex_id", "vertex_x", "vertex_y"])
     for connection in test_map:
         node1 = vertex(vertex_id=connection[0][0], vertex_x=connection[0][1][0], vertex_y=connection[0][1][1])
         node2 = vertex(vertex_id=connection[1][0], vertex_x=connection[1][1][0], vertex_y=connection[1][1][1])
@@ -234,5 +294,27 @@ if __name__ == "__main__":
     print(irrevocabile(G, 'B', 'Z'))
     print(backTracking(G, 'B', 'Z'))
     print(depth_first_search(G, 'B', 'Z'))
+    print(breadth_first_search(G, 'B', 'Z'))
     print(uniform_cost_search(G, 'B', 'Z'))
-    
+    print(a_star(G, 'B', 'Z'))
+
+    # Testando o a * em um exercicio executado em aula pelo professor
+
+    # g = Graph()
+
+    # vertex = namedtuple("Vertex", ["vertex_id", "vertex_x", "vertex_y"])
+    # a = vertex(vertex_id='A', vertex_x=4, vertex_y=0)
+    # b = vertex(vertex_id='B', vertex_x=11, vertex_y=0)
+    # c = vertex(vertex_id='C', vertex_x=6, vertex_y=0)
+    # d = vertex(vertex_id='D', vertex_x=8, vertex_y=0)
+    # e = vertex(vertex_id='E', vertex_x=7, vertex_y=0)
+
+    # g.add_edge(a, b, 4)
+    # g.add_edge(a, c, 2)
+    # g.add_edge(b, c, 1)
+    # g.add_edge(b, d, 3)
+    # g.add_edge(c, d, 5)
+    # g.add_edge(c, e, 2)
+    # g.add_edge(d, e, 1)
+    # print(G.graph)
+    # print(a_star(g, 'A', 'D'))
