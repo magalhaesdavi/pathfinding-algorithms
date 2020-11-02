@@ -193,7 +193,7 @@ def uniform_cost_search(graph, start_id, end_id):
 
         if current_node.vertex_id == end_id:
             success = True
-            solution = current_path
+            solution = current_path + [end_node]
         else:
             if not current_node in visited:
                 edges = list(graph[current_node].keys())
@@ -209,7 +209,7 @@ def uniform_cost_search(graph, start_id, end_id):
 
                 visited.append(current_node)
 
-    return [node.vertex_id for node in solution + [end_node]], "SUCCESS" if success else "FAILURE"
+    return [node.vertex_id for node in solution], "SUCCESS" if success else "FAILURE"
 
 def greedy(graph, start_id, end_id):
 
@@ -288,6 +288,59 @@ def a_star(graph, start_id, end_id):
     else:
         return solution, "failure"
 
+def ida_star(graph, start_id, end_id):
+
+    start_node = [node for node in list(graph.graph.keys()) if node.vertex_id == start_id][0]
+    end_node = [node for node in list(graph.graph.keys()) if node.vertex_id == end_id][0]
+
+    success = False
+    fail = False
+    solution = []
+
+    limit = utils.heuristic(start_node, end_node)
+
+    while not success or not fail:
+        distance = ida_star_aux(graph, start_node, end_node, 0, limit, solution)
+
+        if distance == float("inf"):
+            fail = True
+            break
+        elif distance < 0:
+            success = True
+            break
+        else:
+            limit = distance
+            solution = []
+
+    return [node.vertex_id for node in solution], "SUCCESS" if success else "FAILURE"
+
+def ida_star_aux(graph, node, end_node, distance, limit, path):
+
+    path.append(node)
+
+    if node == end_node:
+        return -distance
+
+    estimate = distance + utils.heuristic(node, end_node)
+    if estimate > limit:
+        path.pop()
+        return estimate
+
+    n_limit = float("inf")
+    edges = list(graph[node].keys())
+    edges.sort(key=lambda edge: edge.vertex_id)
+
+    for edge in edges:
+        edge_dist = ida_star_aux(graph, edge, end_node, distance + graph[node][edge].weight, limit, path)    
+        if edge_dist < 0:
+            return edge_dist
+        elif edge_dist < n_limit:
+            n_limit = edge_dist
+
+    if len(path) > 0:
+        path.pop()
+    return n_limit
+
 if __name__ == "__main__":
 
     G = Graph()
@@ -309,8 +362,9 @@ if __name__ == "__main__":
     print(f"Breadth first search: {breadth_first_search(G, 'B', 'Z')}")
     print(f"Depth first search: {depth_first_search(G, 'B', 'Z')}")
     print(f"Uniform cost search: {irrevocable(G, 'B', 'Z')}")
-    print(f"A star: {a_star(G, 'B', 'Z')}")
     print(f"Greedy: {greedy(G, 'B', 'Z')}")
+    print(f"A star: {a_star(G, 'B', 'Z')}")
+    print(f"IDA star: {ida_star(G, 'B', 'Z')}")
 
 
     # Testando o a * em um exercicio executado em aula pelo professor

@@ -69,7 +69,10 @@ class Graph:
 
     def plotGraph(self):
         plot = "######################\n"
-        for node in self.graph.items():
+        node_list = list(self.graph.items())
+        node_list.sort(key=lambda node: node[0].vertex_id)
+        
+        for node in node_list:
             plot += f"{node[0].vertex_id} -> "
             for edge in node[1].items():
                 plot += f"({edge[0].vertex_id}, {edge[1].weight})"

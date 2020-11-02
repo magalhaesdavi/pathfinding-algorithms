@@ -55,6 +55,4 @@ def find_smaller(d, alg):
         return None
 
 def heuristic(vertex_a, vertex_b):
-    # return math.sqrt( (vertex_b.vertex_x - vertex_a.vertex_x)**2 +
-    #     (vertex_b.vertex_y - vertex_a.vertex_y)**2 )
     return calculate_dist((vertex_a.vertex_x, vertex_a.vertex_y), (vertex_b.vertex_x, vertex_b.vertex_y))
