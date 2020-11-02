@@ -4,15 +4,10 @@ import math
 import random
 import string
 import timeit
-
 from graph import Graph
 import utils
-# from utils import map_generator
-# from utils import find_smaller
-# from utils import map_generator, calculate_dist
 
-
-def irrevocabile(graph, start_id, end_id):
+def irrevocable(graph, start_id, end_id):
 
     start_node = [node for node in list(graph.graph.keys()) if node.vertex_id == start_id][0]
 
@@ -51,7 +46,6 @@ def irrevocabile(graph, start_id, end_id):
             break
 
     return [node.vertex_id for node in solution], "SUCCESS" if success else "FAILURE"
-
 
 def backTracking(graph, start_id, end_id):
 
@@ -98,7 +92,6 @@ def backTracking(graph, start_id, end_id):
 
     return [node.vertex_id for node in solution], "SUCCESS" if success else "FAILURE"
 
-
 def breadth_first_search(graph, start_id, end_id):
 
     start_node = [node for node in list(graph.graph.keys()) if node.vertex_id == start_id][0]
@@ -135,7 +128,6 @@ def breadth_first_search(graph, start_id, end_id):
         return solution, "success"
     else:
         return solution, "failure"
-
 
 def depth_first_search(graph, start_id, end_id):
 
@@ -176,7 +168,6 @@ def depth_first_search(graph, start_id, end_id):
         return solution, "success"
     else:
         return solution, "failure"
-
 
 def uniform_cost_search(graph, start_id, end_id):
 
@@ -220,10 +211,33 @@ def uniform_cost_search(graph, start_id, end_id):
 
     return [node.vertex_id for node in solution + [end_node]], "SUCCESS" if success else "FAILURE"
 
-
 def greedy(graph, start_id, end_id):
-    pass
 
+    start_node = [node for node in list(graph.graph.keys()) if node.vertex_id == start_id][0]
+    end_node = [node for node in list(graph.graph.keys()) if node.vertex_id == end_id][0]
+
+    solution = []
+    solution.append(start_node.vertex_id)
+    current = start_node
+
+    success = False
+    fail = False
+
+    while not success:
+        children = {}
+        for child in graph[current]:
+            if child.vertex_id not in solution:
+                children[child] = utils.heuristic(child, end_node)
+
+        if children:
+            current = utils.find_smaller(children, 'greedy')
+            solution.append(current.vertex_id)
+            if current == end_node:
+                success = True
+                return solution, 'success'
+        else:
+            fail = True
+            return solution, 'failure'
 
 def a_star(graph, start_id, end_id):
 
@@ -242,7 +256,7 @@ def a_star(graph, start_id, end_id):
     parentMap = {}
 
     while openList:
-        current = utils.find_smaller(openList)
+        current = utils.find_smaller(openList, 'a_star')
         closedList[current] = openList[current]
         del openList[current]
         if current == end_node:
@@ -274,7 +288,6 @@ def a_star(graph, start_id, end_id):
     else:
         return solution, "failure"
 
-
 if __name__ == "__main__":
 
     G = Graph()
@@ -289,17 +302,18 @@ if __name__ == "__main__":
         weight = connection[2]
         G.add_edge(node1, node2, weight)
 
-    print(G)
+    # print(G)
 
-    print(irrevocabile(G, 'B', 'Z'))
-    print(backTracking(G, 'B', 'Z'))
-    print(depth_first_search(G, 'B', 'Z'))
-    print(breadth_first_search(G, 'B', 'Z'))
-    print(uniform_cost_search(G, 'B', 'Z'))
-    print(a_star(G, 'B', 'Z'))
+    print(f"Irrevocable: {irrevocable(G, 'B', 'Z')}")
+    print(f"Backtracking: {backTracking(G, 'B', 'Z')}")
+    print(f"Breadth first search: {breadth_first_search(G, 'B', 'Z')}")
+    print(f"Depth first search: {depth_first_search(G, 'B', 'Z')}")
+    print(f"Uniform cost search: {irrevocable(G, 'B', 'Z')}")
+    print(f"A star: {a_star(G, 'B', 'Z')}")
+    print(f"Greedy: {greedy(G, 'B', 'Z')}")
+
 
     # Testando o a * em um exercicio executado em aula pelo professor
-
     # g = Graph()
 
     # vertex = namedtuple("Vertex", ["vertex_id", "vertex_x", "vertex_y"])
