@@ -189,32 +189,32 @@ def uniform_cost_search(graph, start_id, end_id):
     solution = []
     visited = []
 
+    min_cost = float("inf")
+    cost = 0
+    
     prority_queue = PriorityQueue()
     path_to_goal = []
     prority_queue.put((0, start_node, path_to_goal))
 
-    cost = 0
 
     while not prority_queue.empty():
-        top_q = prority_queue.get()
-        current_node = top_q[1]
-        current_path = top_q[2]
 
-        if current_node.vertex_id == end_id:
+        cost, current_node, current_path = prority_queue.get()
+
+        if current_node.vertex_id == end_id and cost < min_cost:
             success = True
             solution = current_path + [end_node]
+            min_cost = cost
         else:
             if not current_node in visited:
+
                 edges = list(graph[current_node].keys())
-                edges.sort(
-                    key=lambda edge: cost + graph[current_node][edge].weight
-                )
-                cost += graph[current_node][edges[0]].weight
 
                 while len(edges) > 0:
                     edge = edges.pop()
                     prority_queue.put(
-                        (cost + graph[current_node][edge].weight, edge, current_path + [current_node]))
+                        (cost + graph[current_node][edge].weight, edge, current_path + [current_node])
+                    )
 
                 visited.append(current_node)
 
