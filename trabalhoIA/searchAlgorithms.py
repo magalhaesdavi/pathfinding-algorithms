@@ -216,28 +216,46 @@ def greedy(graph, start_id, end_id):
     start_node = [node for node in list(graph.graph.keys()) if node.vertex_id == start_id][0]
     end_node = [node for node in list(graph.graph.keys()) if node.vertex_id == end_id][0]
 
+    parentMap = {}
+    visited = []
+    stack = []
     solution = []
-    solution.append(start_node.vertex_id)
     current = start_node
-
+    stack.append(current)
     success = False
-    fail = False
 
-    while not success:
+    while stack:
+        current = stack[-1]
+        stack.pop()
+
+        if current not in visited:
+            visited.append(current)
+
+        if current == end_node:
+            success = True
+            break
+
         children = {}
         for child in graph[current]:
-            if child.vertex_id not in solution:
+            if child not in visited:
                 children[child] = utils.heuristic(child, end_node)
+                parentMap[child.vertex_id] = current.vertex_id 
 
         if children:
-            current = utils.find_smaller(children, 'greedy')
-            solution.append(current.vertex_id)
-            if current == end_node:
-                success = True
-                return solution, 'success'
-        else:
-            fail = True
-            return solution, 'failure'
+            sorted_children = list({k: v for k, v in sorted(children.items(), key=lambda item: item[1])}.keys())
+            sorted_children.reverse()
+            stack += sorted_children
+
+    curr_id = current.vertex_id
+    if success:
+        while curr_id != start_node.vertex_id:
+            solution.append(curr_id)
+            curr_id = parentMap[curr_id]
+        solution.append(curr_id)
+        solution.reverse()
+        return solution, "success"
+    else:
+        return solution, "failure"
 
 def a_star(graph, start_id, end_id):
 
@@ -355,7 +373,7 @@ if __name__ == "__main__":
         weight = connection[2]
         G.add_edge(node1, node2, weight)
 
-    # print(G)
+    print(G)
 
     print(f"Irrevocable: {irrevocable(G, 'B', 'Z')}")
     print(f"Backtracking: {backTracking(G, 'B', 'Z')}")
