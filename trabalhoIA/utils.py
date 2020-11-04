@@ -3,10 +3,8 @@ import numpy as np
 import math
 from itertools import combinations
 
-
 def calculate_dist(cords1, cords2):
     return math.sqrt((cords1[0] - cords2[0])**2 + (cords1[1] - cords2[1])**2)
-
 
 def map_generator(available_nodes, density=0.5, weights_range=(0, 100)):
     """
@@ -57,12 +55,16 @@ def map_generator(available_nodes, density=0.5, weights_range=(0, 100)):
     print(f"Mapa gerado com {len(map_data)} conexoes")
     return map_data
 
-
-def find_smaller(d):
+def find_smaller(d, alg):
     # return min(d, key=d.get)
     # return min(d, key = lambda t: t[2])
-    return min(d.items(), key=lambda k: k[1][2])[0]
-
+    if alg == 'a_star':
+        return min(d.items(), key=lambda k: k[1][2])[0]
+    if alg == 'greedy':
+        return min(d, key=d.get)
+    else:
+        print('Invalid algorithm!')
+        return None
 
 def heuristic(vertex_a, vertex_b):
     return calculate_dist((vertex_a.vertex_x, vertex_a.vertex_y), (vertex_b.vertex_x, vertex_b.vertex_y))

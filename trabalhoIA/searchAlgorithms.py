@@ -4,15 +4,10 @@ import math
 import random
 import string
 import timeit
-
 from graph import Graph
 import utils
-# from utils import map_generator
-# from utils import find_smaller
-# from utils import map_generator, calculate_dist
 
-
-def irrevocabile(graph, start_id, end_id):
+def irrevocable(graph, start_id, end_id):
 
     start_node = [node for node in list(graph.graph.keys()) if node.vertex_id == start_id][0]
 
@@ -51,7 +46,6 @@ def irrevocabile(graph, start_id, end_id):
             break
 
     return [node.vertex_id for node in solution], "SUCCESS" if success else "FAILURE"
-
 
 def backTracking(graph, start_id, end_id):
 
@@ -98,12 +92,14 @@ def backTracking(graph, start_id, end_id):
 
     return [node.vertex_id for node in solution], "SUCCESS" if success else "FAILURE"
 
-
 def breadth_first_search(graph, start_id, end_id):
+
+    start_time = timeit.default_timer()
+    expanded = 0
+    branching_factor = []
 
     start_node = [node for node in list(graph.graph.keys()) if node.vertex_id == start_id][0]
     end_node = [node for node in list(graph.graph.keys()) if node.vertex_id == end_id][0]
-
     parentMap = {}
     visited = []
     solution = []
@@ -119,25 +115,41 @@ def breadth_first_search(graph, start_id, end_id):
             success = True
             break
         else:
+            expanded += 1
+            n = 0
             for child in graph[current]:
                 if child not in visited:
                     queue.append(child)
                     visited.append(child)
-                    parentMap[child.vertex_id] = current.vertex_id
+                    parentMap[child] = current
+                n += 1
+            branching_factor.append(n)
 
-    curr_id = current.vertex_id
+    cost = 0
     if success:
-        while curr_id != start_node.vertex_id:
-            solution.append(curr_id)
-            curr_id = parentMap[curr_id]
-        solution.append(curr_id)
+        while current != start_node:
+            solution.append(current.vertex_id)
+            cost += graph[current][parentMap[current]].weight
+            current = parentMap[current]
+        solution.append(current.vertex_id)
         solution.reverse()
-        return solution, "success"
-    else:
-        return solution, "failure"
 
+        end_time = timeit.default_timer()
+        depth = len(solution) - 1
+        exec_time = end_time - start_time
+        average = sum(branching_factor) / len(branching_factor)
+
+        return solution, depth, cost, expanded, len(visited), average, exec_time, 'success'
+    else:
+        end_time = timeit.default_timer()
+        exec_time = end_time - start_time
+        return solution, -1, cost, expanded, len(visited), -1, exec_time, 'failure'
 
 def depth_first_search(graph, start_id, end_id):
+
+    start_time = timeit.default_timer()
+    expanded = 0
+    branching_factor = []
 
     start_node = [node for node in list(graph.graph.keys()) if node.vertex_id == start_id][0]
     end_node = [node for node in list(graph.graph.keys()) if node.vertex_id == end_id][0]
@@ -161,22 +173,34 @@ def depth_first_search(graph, start_id, end_id):
             success = True
             break
 
-        for child in graph[current]:
-            if child not in visited:
-                stack.append(child)
-                parentMap[child.vertex_id] = current.vertex_id
-
-    curr_id = current.vertex_id
+        else:
+            expanded += 1
+            n = 0
+            for child in graph[current]:
+                if child not in visited:
+                    stack.append(child)
+                    parentMap[child] = current
+                n +=1
+            branching_factor.append(n)
+    # curr_id = current.vertex_id
+    cost = 0
     if success:
-        while curr_id != start_node.vertex_id:
-            solution.append(curr_id)
-            curr_id = parentMap[curr_id]
-        solution.append(curr_id)
+        while current != start_node:
+            solution.append(current.vertex_id)
+            cost += graph[current][parentMap[current]].weight
+            current = parentMap[current]
+        solution.append(current.vertex_id)
         solution.reverse()
-        return solution, "success"
-    else:
-        return solution, "failure"
 
+        end_time = timeit.default_timer()
+        depth = len(solution) - 1
+        exec_time = end_time - start_time
+        average = sum(branching_factor) / len(branching_factor)
+        return solution, depth, cost, expanded, len(visited), average, exec_time, 'success'
+    else:
+        end_time = timeit.default_timer()
+        exec_time = end_time - start_time
+        return solution, -1, cost, expanded, len(visited), -1, exec_time, 'failure'
 
 def uniform_cost_search(graph, start_id, end_id):
 
@@ -220,12 +244,74 @@ def uniform_cost_search(graph, start_id, end_id):
 
     return [node.vertex_id for node in solution], "SUCCESS" if success else "FAILURE"
 
-
 def greedy(graph, start_id, end_id):
-    pass
 
+    start_time = timeit.default_timer()
+    expanded = 0
+    branching_factor = []
+
+    start_node = [node for node in list(graph.graph.keys()) if node.vertex_id == start_id][0]
+    end_node = [node for node in list(graph.graph.keys()) if node.vertex_id == end_id][0]
+
+    parentMap = {}
+    visited = []
+    stack = []
+    solution = []
+    current = start_node
+    stack.append(current)
+    success = False
+
+    while stack:
+        current = stack[-1]
+        stack.pop()
+
+        if current not in visited:
+            visited.append(current)
+
+        if current == end_node:
+            success = True
+            break
+        else:
+            expanded +=1
+            n = 0
+            children = {}
+            for child in graph[current]:
+                if child not in visited:
+                    children[child] = utils.heuristic(child, end_node)
+                    parentMap[child] = current
+                n += 1
+            branching_factor.append(n)
+
+            if children:
+                sorted_children = list({k: v for k, v in sorted(children.items(), key=lambda item: item[1])}.keys())
+                sorted_children.reverse()
+                stack += sorted_children
+
+    cost = 0
+    if success:
+        while current != start_node:
+            solution.append(current.vertex_id)
+            cost += graph[current][parentMap[current]].weight
+            current = parentMap[current]
+        solution.append(current.vertex_id)
+        solution.reverse()
+
+        end_time = timeit.default_timer()
+        depth = len(solution) - 1
+        exec_time = end_time - start_time
+        average = sum(branching_factor) / len(branching_factor)
+
+        return solution, depth, cost, expanded, len(visited), average, exec_time, 'success'
+    else:
+        end_time = timeit.default_timer()
+        exec_time = end_time - start_time
+        return solution, -1, cost, expanded, len(visited), -1, exec_time, 'failure'
 
 def a_star(graph, start_id, end_id):
+
+    start_time = timeit.default_timer()
+    expanded = 0
+    branching_factor = []
 
     start_node = [node for node in list(graph.graph.keys()) if node.vertex_id == start_id][0]
     end_node = [node for node in list(graph.graph.keys()) if node.vertex_id == end_id][0]
@@ -242,38 +328,51 @@ def a_star(graph, start_id, end_id):
     parentMap = {}
 
     while openList:
-        current = utils.find_smaller(openList)
+        current = utils.find_smaller(openList, 'a_star')
         closedList[current] = openList[current]
         del openList[current]
         if current == end_node:
             success = True
             break
-        for child in graph[current]:
-            if child in closedList:
-                continue
-            if child in openList:
-                new_g = closedList[current][0] + graph[current][child].weight
-                if openList[child][0] > new_g:
-                    openList[child][0] = new_g
-                    openList[child][2] = new_g + openList[child][1]
-                    parentMap[child.vertex_id] = current.vertex_id
-            else:
-                child_g = closedList[current][0] + graph[current][child].weight
-                child_h = utils.heuristic(child, end_node)
-                openList[child] = [child_g, child_h, child_g + child_h]
-                parentMap[child.vertex_id] = current.vertex_id
+        else:
+            expanded += 1
+            n = 0
+            for child in graph[current]:
+                if child in closedList:
+                    continue
+                if child in openList:
+                    new_g = closedList[current][0] + graph[current][child].weight
+                    if openList[child][0] > new_g:
+                        openList[child][0] = new_g
+                        openList[child][2] = new_g + openList[child][1]
+                        parentMap[child] = current
+                else:
+                    child_g = closedList[current][0] + graph[current][child].weight
+                    child_h = utils.heuristic(child, end_node)
+                    openList[child] = [child_g, child_h, child_g + child_h]
+                    parentMap[child] = current
+                n += 1
+            branching_factor.append(n)
 
-    curr_id = current.vertex_id
+    cost = 0
     if success:
-        while curr_id != start_node.vertex_id:
-            solution.append(curr_id)
-            curr_id = parentMap[curr_id]
-        solution.append(curr_id)
+        while current != start_node:
+            solution.append(current.vertex_id)
+            cost += graph[current][parentMap[current]].weight
+            current = parentMap[current]
+        solution.append(current.vertex_id)
         solution.reverse()
-        return solution, "success"
-    else:
-        return solution, "failure"
 
+        end_time = timeit.default_timer()
+        depth = len(solution) - 1
+        exec_time = end_time - start_time
+        average = sum(branching_factor) / len(branching_factor)
+
+        return solution, depth, cost, expanded, len(openList) + len(closedList), average, exec_time, 'success'
+    else:
+        end_time = timeit.default_timer()
+        exec_time = end_time - start_time
+        return solution, -1, cost, expanded, len(visited), -1, exec_time, 'failure'
 
 def ida_star(graph, start_id, end_id):
 
@@ -328,6 +427,14 @@ def ida_star_aux(graph, node, end_node, distance, limit, path):
         path.pop()
     return n_limit
 
+# TODO: Arrumar IDA*, plotar mapa gerado, arrumar campo solução no CSV
+
+# TODO: Aumentar número de cidades no mapa
+
+# TODO: Encontrar par de cidades mais longes uma da outra para serem os nós de início e fim, respectivamente
+
+# TODO: Analisar resultados
+
 if __name__ == "__main__":
 
     G = Graph()
@@ -344,18 +451,41 @@ if __name__ == "__main__":
         weight = connection[2]
         G.add_edge(node1, node2, weight)
 
-    print(G)
+    #* Já deixei na ordem e formato certo, quando as funções comentadas estiverem prontas para retornar as métricas descomente-as e teste
 
-    print(irrevocabile(G, 'B', 'Z'))
-    print(backTracking(G, 'B', 'Z'))
-    print(depth_first_search(G, 'B', 'Z'))
-    print(breadth_first_search(G, 'B', 'Z'))
-    print(uniform_cost_search(G, 'B', 'Z'))
-    print(a_star(G, 'B', 'Z'))
-    print(ida_star(G, 'B', 'Z'))
+    f = open("output.csv", "w")
+    f.write("Algorithm, Solution, Depth, Cost, Expanded nodes, Visited nodes, Average branching factor, Execution time, Result\n")
+    # solution, depth, cost, expanded, visited, average, exec_time, result = backTracking(G, 'B', 'Z')
+    # f.write(f"Backtracking,{solution},{depth},{cost},{expanded},{visited},{average},{exec_time},{result}\n")
+    solution, depth, cost, expanded, visited, average, exec_time, result = breadth_first_search(G, 'B', 'Z')
+    f.write(f"BFS,{solution},{depth},{cost},{expanded},{visited},{average},{exec_time},{result}\n")
+    solution, depth, cost, expanded, visited, average, exec_time, result = depth_first_search(G, 'B', 'Z')
+    f.write(f"DFS,{solution},{depth},{cost},{expanded},{visited},{average},{exec_time},{result}\n")
+    # solution, depth, cost, expanded, visited, average, exec_time, result = uniform_cost_search(G, 'B', 'Z')
+    # f.write(f"Busca ordenada,{solution},{depth},{cost},{expanded},{visited},{average},{exec_time},{result}\n")
+    solution, depth, cost, expanded, visited, average, exec_time, result = greedy(G, 'B', 'Z')
+    f.write(f"Greedy,{solution},{depth},{cost},{expanded},{visited},{average},{exec_time},{result}\n")
+    solution, depth, cost, expanded, visited, average, exec_time, result = a_star(G, 'B', 'Z')
+    f.write(f"A*,{solution},{depth},{cost},{expanded},{visited},{average},{exec_time},{result}\n")
+    # solution, depth, cost, expanded, visited, average, exec_time, result = ida_star(G, 'B', 'Z')
+    # f.write(f"IDA*,{solution},{depth},{cost},{expanded},{visited},{average},{exec_time},{result}\n")
+    f.close()
+
+
+    # Para testar algoritmos que não estão prontos para o CSV
+    # print(G)
+
+    # print(f"Irrevocable: {irrevocable(G, 'B', 'Z')}")
+    # print(f"Backtracking: {backTracking(G, 'B', 'Z')}")
+    # print(f"Breadth first search: {breadth_first_search(G, 'B', 'Z')}")
+    # print(f"Depth first search: {depth_first_search(G, 'B', 'Z')}")
+    # print(f"Uniform cost search: {irrevocable(G, 'B', 'Z')}")
+    # print(f"Greedy: {greedy(G, 'B', 'Z')}")
+    # print(f"A star: {a_star(G, 'B', 'Z')}")
+    # print(f"IDA star: {ida_star(G, 'B', 'Z')}")
+
 
     # Testando o a * em um exercicio executado em aula pelo professor
-
     # g = Graph()
 
     # vertex = namedtuple("Vertex", ["vertex_id", "vertex_x", "vertex_y"])
