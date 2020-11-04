@@ -62,6 +62,11 @@ def find_smaller(d, alg):
 def heuristic(vertex_a, vertex_b):
     return calculate_dist((vertex_a.vertex_x, vertex_a.vertex_y), (vertex_b.vertex_x, vertex_b.vertex_y))
 
+def format_solution(solution: list):
+    formated_solution = re.sub("\[|\]", "", str(solution))
+    formated_solution = re.sub(" ", "", str(formated_solution))
+    return re.sub(",", "->", formated_solution)
+
 def save_metrics(filename, close_on_end=True, **metrics):
 
     output_file = open(filename, "w")
