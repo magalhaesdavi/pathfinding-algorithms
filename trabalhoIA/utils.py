@@ -1,6 +1,7 @@
 import random
 import numpy as np
 import math
+import re
 from itertools import combinations
 
 def calculate_dist(cords1, cords2):
@@ -20,18 +21,10 @@ def map_generator(available_nodes, density=0.5, weights_range=(0, 100)):
     map_cords = list(map(lambda node_id, cords: (node_id, cords), available_nodes, rand_cords))
 
     connections = list(combinations(map_cords, 2))
-    # random.shuffle(connections)
-
-    # print(map_cords)
-    print("")
 
     for map_cord in map_cords:
         node_edges = list(filter(lambda connection: connection[0][0] == map_cord[0], connections))
         node_edges.sort(key=lambda  connection: calculate_dist(map_cord[1], connection[1][1]))
-
-        print(map_cord)
-        print(node_edges[:5])
-
 
         size = int(len(node_edges) * density)
         if size > len(node_edges):
@@ -68,3 +61,22 @@ def find_smaller(d, alg):
 
 def heuristic(vertex_a, vertex_b):
     return calculate_dist((vertex_a.vertex_x, vertex_a.vertex_y), (vertex_b.vertex_x, vertex_b.vertex_y))
+
+def save_metrics(filename, close_on_end=True, **metrics):
+
+    output_file = open(filename, "w")
+    metric_header = list(metrics.keys())
+
+    joint = ", "
+    output_file.write(f"{joint.join(metric_header)}\n")
+
+    line = ""
+    for metric in metric_header:
+        line += f"{metrics[metric]}, "
+    line = line[:-2]
+
+    output_file.writelines(line)
+
+    if close_on_end:
+        output_file.close()
+
