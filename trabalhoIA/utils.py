@@ -3,6 +3,7 @@ import numpy as np
 import math
 import re
 from itertools import combinations
+import matplotlib.pyplot as plt
 
 def calculate_dist(cords1, cords2):
     return math.sqrt((cords1[0] - cords2[0])**2 + (cords1[1] - cords2[1])**2)
@@ -67,21 +68,44 @@ def format_solution(solution: list):
     formated_solution = re.sub(" ", "", str(formated_solution))
     return re.sub(",", "->", formated_solution)
 
-def save_metrics(filename, close_on_end=True, **metrics):
+def save_metrics(filename, write_header=True, close_on_end=True, **metrics):
 
-    output_file = open(filename, "w")
+    output_file = open(filename, "a")
     metric_header = list(metrics.keys())
 
-    joint = ", "
-    output_file.write(f"{joint.join(metric_header)}\n")
+    if write_header:
+        joint = ", "
+        output_file.write(f"{joint.join(metric_header)}\n")
 
     line = ""
     for metric in metric_header:
         line += f"{metrics[metric]}, "
-    line = line[:-2]
+    line = line[:-2] + "\n"
 
-    output_file.writelines(line)
+    output_file.write(line)
 
     if close_on_end:
         output_file.close()
+
+
+def display_graph(graph, filename):
+    plt.style.use("bmh")
+
+    nodes = list(graph.graph.keys())
+
+    fig = plt.Figure(figsize=(12,10))
+
+    plt.title(f"Mapa do Grafo")
+
+    for node in nodes:
+        plt.annotate(node.vertex_id, (node.vertex_x, node.vertex_y))
+        plt.scatter([node.vertex_x], [node.vertex_y])
+
+        edges = list(graph[node])
+
+        for edge in edges:
+            plt.plot([node.vertex_x, edge.vertex_x], [node.vertex_y, edge.vertex_y], color="#7777AA", lw=0.5)
+
+
+    plt.savefig(filename)
 
