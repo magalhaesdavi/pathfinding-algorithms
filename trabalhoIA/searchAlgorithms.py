@@ -333,7 +333,9 @@ if __name__ == "__main__":
     G = Graph()
 
     nodes_list = list(string.ascii_uppercase)
-    test_map = utils.map_generator(nodes_list, 0.1)
+    test_map = utils.map_generator(nodes_list, 0.25, weights_range=(-50, 50))
+
+    print(test_map)
 
     vertex = namedtuple("Vertex", ["vertex_id", "vertex_x", "vertex_y"])
     for connection in test_map:
