@@ -109,8 +109,7 @@ def backTracking(graph, start_id, end_id):
     average_branching_factor = sum(branching_factor) / len(branching_factor)
 
 
-    # return [node.vertex_id for node in solution], "SUCCESS" if success else "FAILURE"
-    return [node.vertex_id for node in solution], depth, cost, expanded, len(visited), average, exec_time, "SUCCESS" if success else "FAILURE"
+    return [node.vertex_id for node in solution], depth, cost, expanded, len(visited), average_branching_factor, exec_time, "SUCCESS" if success else "FAILURE"
 
 def breadth_first_search(graph, start_id, end_id):
 
@@ -275,7 +274,6 @@ def uniform_cost_search(graph, start_id, end_id):
     exec_time = end_time - start_time
     average_branching_factor = sum(branching_factor) / len(branching_factor)
 
-    # return [node.vertex_id for node in solution], "SUCCESS" if success else "FAILURE"
     return [node.vertex_id for node in solution], depth, min_cost, expanded, len(visited), average, exec_time, "SUCCESS" if success else "FAILURE"
 
 def greedy(graph, start_id, end_id):
@@ -415,7 +413,7 @@ def ida_star(graph, start_id, end_id):
 
     #Variaveis de estatisticas
     start_time = timeit.default_timer()
-    expanded = 0
+    expanded = [0]
     cost = 0
     visited = []
     branching_factor = []
@@ -448,6 +446,7 @@ def ida_star(graph, start_id, end_id):
         else:
             limit = distance
             solution = []
+            visited = []
 
     end_time = timeit.default_timer()
     cost = -1 * distance
@@ -455,8 +454,7 @@ def ida_star(graph, start_id, end_id):
     exec_time = end_time - start_time
     average_branching_factor = sum(branching_factor) / len(branching_factor)
 
-    # return [node.vertex_id for node in solution], "SUCCESS" if success else "FAILURE"
-    return [node.vertex_id for node in solution], depth, cost, expanded, len(visited), average, exec_time, "SUCCESS" if success else "FAILURE"
+    return [node.vertex_id for node in solution], depth, cost, expanded[0], len(visited), average, exec_time, "SUCCESS" if success else "FAILURE"
 
 def ida_star_aux(graph, node, end_node, distance, visited, limit, path, expanded, branching_factor):
 
@@ -478,26 +476,27 @@ def ida_star_aux(graph, node, end_node, distance, visited, limit, path, expanded
     n_edges = 0
 
     for edge in edges:
-        expanded += 1
-        n_edges += 1
+        if edge not in visited:
+            expanded[0] += 1
+            n_edges += 1
 
-        edge_dist = ida_star_aux(
-                        graph,
-                        edge,
-                        end_node,
-                        distance + graph[node][edge].weight,
-                        visited,
-                        limit,
-                        path,
-                        expanded,
-                        branching_factor
-                    )
+            edge_dist = ida_star_aux(
+                            graph,
+                            edge,
+                            end_node,
+                            distance + graph[node][edge].weight,
+                            visited,
+                            limit,
+                            path,
+                            expanded,
+                            branching_factor
+                        )
 
-        if edge_dist < 0:
-            branching_factor.append(n_edges)
-            return edge_dist
-        elif edge_dist < n_limit:
-            n_limit = edge_dist
+            if edge_dist < 0:
+                branching_factor.append(n_edges)
+                return edge_dist
+            elif edge_dist < n_limit:
+                n_limit = edge_dist
 
     branching_factor.append(n_edges)
 
