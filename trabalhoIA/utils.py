@@ -70,7 +70,7 @@ def format_solution(solution: list):
 
 def save_metrics(filename, write_header=True, close_on_end=True, **metrics):
 
-    output_file = open(filename, "a")
+    output_file = open("./outputs/" + filename, "a")
     metric_header = list(metrics.keys())
 
     if write_header:
@@ -107,5 +107,5 @@ def display_graph(graph, filename):
             plt.plot([node.vertex_x, edge.vertex_x], [node.vertex_y, edge.vertex_y], color="#7777AA", lw=0.5)
 
 
-    plt.savefig(filename)
+    plt.savefig("./outputs/" + filename)
 

@@ -1,4 +1,4 @@
-from collections import defaultdict, deque, namedtuple
+from collections import defaultdict, deque, namedtuple, OrderedDict
 from queue import Queue, PriorityQueue
 import math
 import random
@@ -51,6 +51,12 @@ def backTracking(graph, start_id, end_id):
 
     start_node = [node for node in list(graph.graph.keys()) if node.vertex_id == start_id][0]
 
+    # Variaveis de estatisticas
+    start_time = timeit.default_timer()
+    cost = 0
+    expanded = 0
+    branching_factor = []
+
     # Inicializando flag de sucesso e fracasso
     success = False
     fail = False
@@ -72,11 +78,15 @@ def backTracking(graph, start_id, end_id):
             while chosen_node in visited:
                 chosen_node = edges[edges.index(chosen_node) + 1]
 
+            branching_factor.append(1)
+
             if chosen_node not in visited:
                 visited.append(chosen_node)
+                expanded += 1
 
             if chosen_node not in solution:
                 solution.append(chosen_node)
+                cost += graph[current_node][chosen_node].weight
                 # Se o proximo no for o no terminal, ativamos a flag de sucesso e terminamos o loop
                 if chosen_node.vertex_id == end_id:
                     success = True
@@ -88,9 +98,19 @@ def backTracking(graph, start_id, end_id):
                 break
             else:
                 # Senao, voltamos na "arvore" de busca
-                solution.pop()
+                poped_node = solution.pop()
+                cost -= graph[poped_node][solution[-1]].weight
+                del poped_node
 
-    return [node.vertex_id for node in solution], "SUCCESS" if success else "FAILURE"
+
+    end_time = timeit.default_timer()
+    depth = len(solution) - 1
+    exec_time = end_time - start_time
+    average_branching_factor = sum(branching_factor) / len(branching_factor)
+
+
+    # return [node.vertex_id for node in solution], "SUCCESS" if success else "FAILURE"
+    return [node.vertex_id for node in solution], depth, cost, expanded, len(visited), average, exec_time, "SUCCESS" if success else "FAILURE"
 
 def breadth_first_search(graph, start_id, end_id):
 
@@ -207,6 +227,11 @@ def uniform_cost_search(graph, start_id, end_id):
     start_node = [node for node in list(graph.graph.keys()) if node.vertex_id == start_id][0]
     end_node = [node for node in list(graph.graph.keys()) if node.vertex_id == end_id][0]
 
+    # Variaveis de estatisticas
+    start_time = timeit.default_timer()
+    expanded = 0
+    branching_factor = []
+
     success = False
     fail = False
 
@@ -234,15 +259,24 @@ def uniform_cost_search(graph, start_id, end_id):
 
                 edges = list(graph[current_node].keys())
 
+                branching_factor.append(len(edges))
+
                 while len(edges) > 0:
                     edge = edges.pop()
                     prority_queue.put(
                         (cost + graph[current_node][edge].weight, edge, current_path + [current_node])
                     )
+                    expanded += 1
 
                 visited.append(current_node)
+    
+    end_time = timeit.default_timer()
+    depth = len(solution) - 1
+    exec_time = end_time - start_time
+    average_branching_factor = sum(branching_factor) / len(branching_factor)
 
-    return [node.vertex_id for node in solution], "SUCCESS" if success else "FAILURE"
+    # return [node.vertex_id for node in solution], "SUCCESS" if success else "FAILURE"
+    return [node.vertex_id for node in solution], depth, min_cost, expanded, len(visited), average, exec_time, "SUCCESS" if success else "FAILURE"
 
 def greedy(graph, start_id, end_id):
 
@@ -379,6 +413,13 @@ def ida_star(graph, start_id, end_id):
     start_node = [node for node in list(graph.graph.keys()) if node.vertex_id == start_id][0]
     end_node = [node for node in list(graph.graph.keys()) if node.vertex_id == end_id][0]
 
+    #Variaveis de estatisticas
+    start_time = timeit.default_timer()
+    expanded = 0
+    cost = 0
+    visited = []
+    branching_factor = []
+
     success = False
     fail = False
     solution = []
@@ -386,7 +427,17 @@ def ida_star(graph, start_id, end_id):
     limit = utils.heuristic(start_node, end_node)
 
     while not success or not fail:
-        distance = ida_star_aux(graph, start_node, end_node, 0, limit, solution)
+        distance = ida_star_aux(
+                        graph,
+                        start_node,
+                        end_node,
+                        0,
+                        visited,
+                        limit,
+                        solution,
+                        expanded,
+                        branching_factor
+                    )
 
         if distance == float("inf"):
             fail = True
@@ -398,11 +449,19 @@ def ida_star(graph, start_id, end_id):
             limit = distance
             solution = []
 
-    return [node.vertex_id for node in solution], "SUCCESS" if success else "FAILURE"
+    end_time = timeit.default_timer()
+    cost = -1 * distance
+    depth = len(solution) - 1
+    exec_time = end_time - start_time
+    average_branching_factor = sum(branching_factor) / len(branching_factor)
 
-def ida_star_aux(graph, node, end_node, distance, limit, path):
+    # return [node.vertex_id for node in solution], "SUCCESS" if success else "FAILURE"
+    return [node.vertex_id for node in solution], depth, cost, expanded, len(visited), average, exec_time, "SUCCESS" if success else "FAILURE"
+
+def ida_star_aux(graph, node, end_node, distance, visited, limit, path, expanded, branching_factor):
 
     path.append(node)
+    visited.append(node)
 
     if node == end_node:
         return -distance
@@ -416,12 +475,31 @@ def ida_star_aux(graph, node, end_node, distance, limit, path):
     edges = list(graph[node].keys())
     edges.sort(key=lambda edge: edge.vertex_id)
 
+    n_edges = 0
+
     for edge in edges:
-        edge_dist = ida_star_aux(graph, edge, end_node, distance + graph[node][edge].weight, limit, path)    
+        expanded += 1
+        n_edges += 1
+
+        edge_dist = ida_star_aux(
+                        graph,
+                        edge,
+                        end_node,
+                        distance + graph[node][edge].weight,
+                        visited,
+                        limit,
+                        path,
+                        expanded,
+                        branching_factor
+                    )
+
         if edge_dist < 0:
+            branching_factor.append(n_edges)
             return edge_dist
         elif edge_dist < n_limit:
             n_limit = edge_dist
+
+    branching_factor.append(n_edges)
 
     if len(path) > 0:
         path.pop()
@@ -440,9 +518,9 @@ if __name__ == "__main__":
     G = Graph()
 
     nodes_list = list(string.ascii_uppercase)
-    test_map = utils.map_generator(nodes_list, 0.25, weights_range=(-50, 50))
+    test_map = utils.map_generator(nodes_list, 0.21, weights_range=(-50, 50))
 
-    print(test_map)
+    # print(test_map)
 
     vertex = namedtuple("Vertex", ["vertex_id", "vertex_x", "vertex_y"])
     for connection in test_map:
@@ -451,26 +529,66 @@ if __name__ == "__main__":
         weight = connection[2]
         G.add_edge(node1, node2, weight)
 
+    print(G)
     #* Já deixei na ordem e formato certo, quando as funções comentadas estiverem prontas para retornar as métricas descomente-as e teste
 
-    f = open("output.csv", "w")
-    f.write("Algorithm, Solution, Depth, Cost, Expanded nodes, Visited nodes, Average branching factor, Execution time, Result\n")
+    # f = open("./outputs/output.csv", "w")
+    # f.write("Algorithm, Solution, Depth, Cost, Expanded nodes, Visited nodes, Average branching factor, Execution time, Result\n")
     # solution, depth, cost, expanded, visited, average, exec_time, result = backTracking(G, 'B', 'Z')
     # f.write(f"Backtracking,{solution},{depth},{cost},{expanded},{visited},{average},{exec_time},{result}\n")
-    solution, depth, cost, expanded, visited, average, exec_time, result = breadth_first_search(G, 'B', 'Z')
-    f.write(f"BFS,{solution},{depth},{cost},{expanded},{visited},{average},{exec_time},{result}\n")
-    solution, depth, cost, expanded, visited, average, exec_time, result = depth_first_search(G, 'B', 'Z')
-    f.write(f"DFS,{solution},{depth},{cost},{expanded},{visited},{average},{exec_time},{result}\n")
+    # solution, depth, cost, expanded, visited, average, exec_time, result = breadth_first_search(G, 'B', 'Z')
+    # f.write(f"BFS,{solution},{depth},{cost},{expanded},{visited},{average},{exec_time},{result}\n")
+    # solution, depth, cost, expanded, visited, average, exec_time, result = depth_first_search(G, 'B', 'Z')
+    # f.write(f"DFS,{solution},{depth},{cost},{expanded},{visited},{average},{exec_time},{result}\n")
     # solution, depth, cost, expanded, visited, average, exec_time, result = uniform_cost_search(G, 'B', 'Z')
     # f.write(f"Busca ordenada,{solution},{depth},{cost},{expanded},{visited},{average},{exec_time},{result}\n")
-    solution, depth, cost, expanded, visited, average, exec_time, result = greedy(G, 'B', 'Z')
-    f.write(f"Greedy,{solution},{depth},{cost},{expanded},{visited},{average},{exec_time},{result}\n")
-    solution, depth, cost, expanded, visited, average, exec_time, result = a_star(G, 'B', 'Z')
-    f.write(f"A*,{solution},{depth},{cost},{expanded},{visited},{average},{exec_time},{result}\n")
+    # solution, depth, cost, expanded, visited, average, exec_time, result = greedy(G, 'B', 'Z')
+    # f.write(f"Greedy,{solution},{depth},{cost},{expanded},{visited},{average},{exec_time},{result}\n")
+    # solution, depth, cost, expanded, visited, average, exec_time, result = a_star(G, 'B', 'Z')
+    # f.write(f"A*,{solution},{depth},{cost},{expanded},{visited},{average},{exec_time},{result}\n")
     # solution, depth, cost, expanded, visited, average, exec_time, result = ida_star(G, 'B', 'Z')
     # f.write(f"IDA*,{solution},{depth},{cost},{expanded},{visited},{average},{exec_time},{result}\n")
-    f.close()
+    # f.close()
 
+    algorithms = {
+        "Backtracking": backTracking,
+        "BFS": breadth_first_search,
+        "DFS": depth_first_search,
+        "UCS": uniform_cost_search,
+        "Greedy": greedy,
+        "A*": a_star,
+        "IDA*": ida_star
+    }
+
+    algorithms = OrderedDict(algorithms)
+    algo_list = list(algorithms.keys())
+
+    for i, algo_name in enumerate(algo_list):
+        header = False
+        close = False
+
+        if not i:
+            header = True
+        if i == len(algo_list) - 1:
+            close = True
+
+        solution, depth, cost, expanded, visited, average, exec_time, result = algorithms[algo_name](G, 'B', 'Z')
+
+        utils.save_metrics(
+            "results.csv",
+            close_on_end=close,
+            write_header=header,
+            algorithm=algo_name,
+            solution=utils.format_solution(solution),
+            depth=depth,
+            cost=cost,
+            expanded_nodes=expanded, 
+            visited_nodes=visited, 
+            average_branching_factor=average, 
+            execution_time=exec_time, 
+            result=result)
+
+    # utils.display_graph(G, "test_graph")
 
     # Para testar algoritmos que não estão prontos para o CSV
     # print(G)
