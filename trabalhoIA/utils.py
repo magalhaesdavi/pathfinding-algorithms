@@ -15,13 +15,14 @@ def map_generator(available_nodes, density=0.5, weights_range=(0, 100)):
     especifica o quao conectados os nos vao estar.
     """
     map_data = set({})
-
     rand_cords = list(np.random.randint(weights_range[0], weights_range[1]+1, (len(available_nodes), 2)))
     random.shuffle(available_nodes)
-
     map_cords = list(map(lambda node_id, cords: (node_id, cords), available_nodes, rand_cords))
-
     connections = list(combinations(map_cords, 2))
+
+    connections.sort(key=lambda connection: calculate_dist(connection[0][1], connection[1][1]))
+
+    most_far_nodes = (connections[-1][0][0], connections[-1][1][0])
 
     for map_cord in map_cords:
         node_edges = list(filter(lambda connection: connection[0][0] == map_cord[0], connections))
@@ -36,6 +37,7 @@ def map_generator(available_nodes, density=0.5, weights_range=(0, 100)):
         for connection in node_edges:
 
             conn_dist = calculate_dist(connection[0][1], connection[1][1])
+
             noise = random.random() + 1
 
             map_data.add(
@@ -47,7 +49,7 @@ def map_generator(available_nodes, density=0.5, weights_range=(0, 100)):
             )
 
     print(f"Mapa gerado com {len(map_data)} conexoes")
-    return map_data
+    return map_data, most_far_nodes
 
 def find_smaller(d, alg):
     # return min(d, key=d.get)

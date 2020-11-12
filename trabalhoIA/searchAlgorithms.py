@@ -517,9 +517,9 @@ if __name__ == "__main__":
     G = Graph()
 
     nodes_list = list(string.ascii_uppercase)
-    test_map = utils.map_generator(nodes_list, 0.21, weights_range=(-50, 50))
+    test_map, most_far_nodes = utils.map_generator(nodes_list, 0.21, weights_range=(-50, 50))
 
-    # print(test_map)
+    print(most_far_nodes)
 
     vertex = namedtuple("Vertex", ["vertex_id", "vertex_x", "vertex_y"])
     for connection in test_map:
@@ -571,7 +571,7 @@ if __name__ == "__main__":
         if i == len(algo_list) - 1:
             close = True
 
-        solution, depth, cost, expanded, visited, average, exec_time, result = algorithms[algo_name](G, 'B', 'Z')
+        solution, depth, cost, expanded, visited, average, exec_time, result = algorithms[algo_name](G, most_far_nodes[0], most_far_nodes[1])
 
         utils.save_metrics(
             "results.csv",
@@ -587,7 +587,7 @@ if __name__ == "__main__":
             execution_time=exec_time, 
             result=result)
 
-    # utils.display_graph(G, "test_graph")
+    utils.display_graph(G, "test_graph")
 
     # Para testar algoritmos que não estão prontos para o CSV
     # print(G)
