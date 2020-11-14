@@ -29,12 +29,6 @@ class Graph:
     def __str__(self):
         return self.plotGraph()
 
-    def searchNode(self, node_id):
-        """
-        Procura e retorna o no pelo id 'node_id e retorna False caso não encontre.
-        """
-        return self.graph[node_id] if node_id in self.graph else False
-
     def insertNode(self, node_id):
         """
         Insere um nó de id 'node_id' no grafo.
