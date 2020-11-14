@@ -26,20 +26,19 @@ def map_generator(available_nodes, density=0.5, weights_range=(0, 100)):
 
     for map_cord in map_cords:
         node_edges = list(filter(lambda connection: connection[0][0] == map_cord[0], connections))
-        node_edges.sort(key=lambda  connection: calculate_dist(map_cord[1], connection[1][1]))
+        node_edges.sort(key=lambda connection: calculate_dist(map_cord[1], connection[1][1]))
 
         size = int(len(node_edges) * density)
         if size > len(node_edges):
             size = len(node_edges)
-
-        node_edges = node_edges[: size]
+        elif size == 0:
+            size = 1
+        node_edges = node_edges[:size]
 
         for connection in node_edges:
 
             conn_dist = calculate_dist(connection[0][1], connection[1][1])
-
             noise = random.random() + 1
-
             map_data.add(
                 (
                     (connection[0][0], tuple(connection[0][1])),
@@ -89,8 +88,8 @@ def save_metrics(filename, write_header=True, close_on_end=True, **metrics):
     if close_on_end:
         output_file.close()
 
-
 def display_graph(graph, filename):
+
     plt.style.use("bmh")
 
     nodes = list(graph.graph.keys())
@@ -108,6 +107,5 @@ def display_graph(graph, filename):
         for edge in edges:
             plt.plot([node.vertex_x, edge.vertex_x], [node.vertex_y, edge.vertex_y], color="#7777AA", lw=0.5)
 
-
     plt.savefig("./outputs/" + filename)
-
+    plt.clf()

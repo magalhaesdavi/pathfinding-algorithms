@@ -1,5 +1,6 @@
 from collections import defaultdict, deque, namedtuple, OrderedDict
 from queue import Queue, PriorityQueue
+from faker import Faker
 import math
 import random
 import string
@@ -504,120 +505,71 @@ def ida_star_aux(graph, node, end_node, distance, visited, limit, path, expanded
         path.pop()
     return n_limit
 
-# TODO: Arrumar IDA*, plotar mapa gerado, arrumar campo solução no CSV
-
-# TODO: Aumentar número de cidades no mapa
-
-# TODO: Encontrar par de cidades mais longes uma da outra para serem os nós de início e fim, respectivamente
-
-# TODO: Analisar resultados
-
 if __name__ == "__main__":
 
-    G = Graph()
+    fake = Faker()
 
-    nodes_list = list(string.ascii_uppercase)
-    test_map, most_far_nodes = utils.map_generator(nodes_list, 0.21, weights_range=(-50, 50))
+    tests = [(25, 50, 0.2), (50, 500, 0.08), (100, 1000, 0.05)]
 
-    print(most_far_nodes)
+    for test in tests:
 
-    vertex = namedtuple("Vertex", ["vertex_id", "vertex_x", "vertex_y"])
-    for connection in test_map:
-        node1 = vertex(vertex_id=connection[0][0], vertex_x=connection[0][1][0], vertex_y=connection[0][1][1])
-        node2 = vertex(vertex_id=connection[1][0], vertex_x=connection[1][1][0], vertex_y=connection[1][1][1])
-        weight = connection[2]
-        G.add_edge(node1, node2, weight)
+        for j in range(5):
+            G = Graph()
+            cities = []
 
-    print(G)
-    #* Já deixei na ordem e formato certo, quando as funções comentadas estiverem prontas para retornar as métricas descomente-as e teste
+            for i in range(test[0]):
+                cities.append(fake.city())
 
-    # f = open("./outputs/output.csv", "w")
-    # f.write("Algorithm, Solution, Depth, Cost, Expanded nodes, Visited nodes, Average branching factor, Execution time, Result\n")
-    # solution, depth, cost, expanded, visited, average, exec_time, result = backTracking(G, 'B', 'Z')
-    # f.write(f"Backtracking,{solution},{depth},{cost},{expanded},{visited},{average},{exec_time},{result}\n")
-    # solution, depth, cost, expanded, visited, average, exec_time, result = breadth_first_search(G, 'B', 'Z')
-    # f.write(f"BFS,{solution},{depth},{cost},{expanded},{visited},{average},{exec_time},{result}\n")
-    # solution, depth, cost, expanded, visited, average, exec_time, result = depth_first_search(G, 'B', 'Z')
-    # f.write(f"DFS,{solution},{depth},{cost},{expanded},{visited},{average},{exec_time},{result}\n")
-    # solution, depth, cost, expanded, visited, average, exec_time, result = uniform_cost_search(G, 'B', 'Z')
-    # f.write(f"Busca ordenada,{solution},{depth},{cost},{expanded},{visited},{average},{exec_time},{result}\n")
-    # solution, depth, cost, expanded, visited, average, exec_time, result = greedy(G, 'B', 'Z')
-    # f.write(f"Greedy,{solution},{depth},{cost},{expanded},{visited},{average},{exec_time},{result}\n")
-    # solution, depth, cost, expanded, visited, average, exec_time, result = a_star(G, 'B', 'Z')
-    # f.write(f"A*,{solution},{depth},{cost},{expanded},{visited},{average},{exec_time},{result}\n")
-    # solution, depth, cost, expanded, visited, average, exec_time, result = ida_star(G, 'B', 'Z')
-    # f.write(f"IDA*,{solution},{depth},{cost},{expanded},{visited},{average},{exec_time},{result}\n")
-    # f.close()
+            test_map, most_far_nodes = utils.map_generator(cities, test[2], weights_range=(-1 * test[1], test[1]))
+            vertex = namedtuple("Vertex", ["vertex_id", "vertex_x", "vertex_y"])
+            for connection in test_map:
+                node1 = vertex(vertex_id=connection[0][0], vertex_x=connection[0][1][0], vertex_y=connection[0][1][1])
+                node2 = vertex(vertex_id=connection[1][0], vertex_x=connection[1][1][0], vertex_y=connection[1][1][1])
+                weight = connection[2]
+                G.add_edge(node1, node2, weight)
 
-    algorithms = {
-        "Backtracking": backTracking,
-        "BFS": breadth_first_search,
-        "DFS": depth_first_search,
-        "UCS": uniform_cost_search,
-        "Greedy": greedy,
-        "A*": a_star,
-        "IDA*": ida_star
-    }
+            file_name = 'graph_n' + str(test[0])
+            utils.display_graph(G, file_name)
 
-    algorithms = OrderedDict(algorithms)
-    algo_list = list(algorithms.keys())
+            algorithms = {
+                "Backtracking": backTracking,
+                "BFS": breadth_first_search,
+                "DFS": depth_first_search,
+                "UCS": uniform_cost_search,
+                "Greedy": greedy,
+                "Astar": a_star,
+                "IDAstar": ida_star
+            }
 
-    for i, algo_name in enumerate(algo_list):
-        header = False
-        close = False
+            algorithms = OrderedDict(algorithms)
+            algo_list = list(algorithms.keys())
 
-        if not i:
-            header = True
-        if i == len(algo_list) - 1:
-            close = True
-
-        solution, depth, cost, expanded, visited, average, exec_time, result = algorithms[algo_name](G, most_far_nodes[0], most_far_nodes[1])
-
-        utils.save_metrics(
-            "results.csv",
-            close_on_end=close,
-            write_header=header,
-            algorithm=algo_name,
-            solution=utils.format_solution(solution),
-            depth=depth,
-            cost=cost,
-            expanded_nodes=expanded, 
-            visited_nodes=visited, 
-            average_branching_factor=average, 
-            execution_time=exec_time, 
-            result=result)
-
-    utils.display_graph(G, "test_graph")
-
-    # Para testar algoritmos que não estão prontos para o CSV
-    # print(G)
-
-    # print(f"Irrevocable: {irrevocable(G, 'B', 'Z')}")
-    # print(f"Backtracking: {backTracking(G, 'B', 'Z')}")
-    # print(f"Breadth first search: {breadth_first_search(G, 'B', 'Z')}")
-    # print(f"Depth first search: {depth_first_search(G, 'B', 'Z')}")
-    # print(f"Uniform cost search: {irrevocable(G, 'B', 'Z')}")
-    # print(f"Greedy: {greedy(G, 'B', 'Z')}")
-    # print(f"A star: {a_star(G, 'B', 'Z')}")
-    # print(f"IDA star: {ida_star(G, 'B', 'Z')}")
+            for i, algo_name in enumerate(algo_list):
 
 
-    # Testando o a * em um exercicio executado em aula pelo professor
-    # g = Graph()
+                # for j in range(5):
 
-    # vertex = namedtuple("Vertex", ["vertex_id", "vertex_x", "vertex_y"])
-    # a = vertex(vertex_id='A', vertex_x=4, vertex_y=0)
-    # b = vertex(vertex_id='B', vertex_x=11, vertex_y=0)
-    # c = vertex(vertex_id='C', vertex_x=6, vertex_y=0)
-    # d = vertex(vertex_id='D', vertex_x=8, vertex_y=0)
-    # e = vertex(vertex_id='E', vertex_x=7, vertex_y=0)
+                header = False
+                close = False
 
-    # g.add_edge(a, b, 4)
-    # g.add_edge(a, c, 2)
-    # g.add_edge(b, c, 1)
-    # g.add_edge(b, d, 3)
-    # g.add_edge(c, d, 5)
-    # g.add_edge(c, e, 2)
-    # g.add_edge(d, e, 1)
-    # print(G.graph)
-    # print(a_star(g, 'A', 'D'))
+                if i == 0 and j == 0 and test[0] == 25:
+                    header = True
+                if i == len(algo_list) - 1:
+                    close = True
+
+                solution, depth, cost, expanded, visited, average, exec_time, result = algorithms[algo_name](G, most_far_nodes[0], most_far_nodes[1])
+
+                utils.save_metrics(
+                    "results.csv",
+                    close_on_end=close,
+                    write_header=header,
+                    algorithm=algo_name,
+                    solution=utils.format_solution(solution),
+                    depth=depth,
+                    cost=cost,
+                    expanded_nodes=expanded, 
+                    visited_nodes=visited, 
+                    average_branching_factor=average, 
+                    execution_time=exec_time, 
+                    result=result,
+                    n = test[0])
