@@ -7,11 +7,11 @@ from searchAlgorithms import *
 
 fake = Faker()
 
-tests = [(25, 50, 0.2), (50, 500, 0.08), (100, 1000, 0.05)]
+tests = [(25, 50, 0.2), (50, 500, 0.08), (100, 1000, 0.05), (200, 1500, 0.045)]
 
 for test in tests:
 
-    for j in range(5):
+    for j in range(10):
         G = Graph()
         cities = []
 

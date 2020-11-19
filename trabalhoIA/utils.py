@@ -88,7 +88,7 @@ def save_metrics(filename, write_header=True, close_on_end=True, **metrics):
     if close_on_end:
         output_file.close()
 
-def display_graph(graph, filename, id_size=7, scale_factor=0.99):
+def display_graph(graph, filename, id_size=7, scale_factor=1.00):
 
     plt.style.use("bmh")
 
