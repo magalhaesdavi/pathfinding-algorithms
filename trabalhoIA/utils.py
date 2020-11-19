@@ -96,8 +96,6 @@ def display_graph(graph, filename, id_size=7, scale_factor=1.00):
 
     fig = plt.Figure(figsize=(17,15))
 
-    plt.title(f"Mapa do Grafo")
-
     for node in nodes:
         plt.scatter([node.vertex_x], [node.vertex_y])
         node_id = plt.annotate(node.vertex_id, (node.vertex_x, node.vertex_y))
@@ -114,6 +112,9 @@ def display_graph(graph, filename, id_size=7, scale_factor=1.00):
 
     plt.xlim(xmin * scale_factor, xmax * scale_factor)
     plt.ylim(ymin * scale_factor, ymax * scale_factor)
+
+    plt.xlabel("X")
+    plt.ylabel("Y")
 
     plt.savefig("./outputs/" + filename)
     plt.clf()
