@@ -74,12 +74,14 @@ def backTracking(graph, start_id, end_id):
         if not all(node in visited for node in edges):
 
             # Nesta implementacao a escolha da regra/edge é por ordem alfabética ou crescente (se forem numeros)
+            n = len(edges)
             edges.sort()
             chosen_node = edges[0]
             while chosen_node in visited:
                 chosen_node = edges[edges.index(chosen_node) + 1]
+                n -= 1
 
-            branching_factor.append(1)
+            branching_factor.append(n)
             expanded += 1
             if chosen_node not in visited:
                 visited.append(chosen_node)
@@ -141,7 +143,7 @@ def breadth_first_search(graph, start_id, end_id):
                     queue.append(child)
                     visited.append(child)
                     parentMap[child] = current
-                n += 1
+                    n += 1
             branching_factor.append(n)
 
     cost = 0
@@ -199,7 +201,7 @@ def depth_first_search(graph, start_id, end_id):
                 if child not in visited:
                     stack.append(child)
                     parentMap[child] = current
-                n +=1
+                    n +=1
             branching_factor.append(n)
     # curr_id = current.vertex_id
     cost = 0
@@ -311,7 +313,7 @@ def greedy(graph, start_id, end_id):
                 if child not in visited:
                     children[child] = utils.heuristic(child, end_node)
                     parentMap[child] = current
-                n += 1
+                    n += 1
             branching_factor.append(n)
 
             if children:
@@ -378,12 +380,13 @@ def a_star(graph, start_id, end_id):
                         openList[child][0] = new_g
                         openList[child][2] = new_g + openList[child][1]
                         parentMap[child] = current
+                        n += 1
                 else:
                     child_g = closedList[current][0] + graph[current][child].weight
                     child_h = utils.heuristic(child, end_node)
                     openList[child] = [child_g, child_h, child_g + child_h]
                     parentMap[child] = current
-                n += 1
+                    n += 1
             branching_factor.append(n)
 
     cost = 0
@@ -416,6 +419,7 @@ def ida_star(graph, start_id, end_id):
     expanded = [0]
     cost = 0
     visited = []
+    sum_visited = 0
     branching_factor = []
 
     success = False
@@ -446,9 +450,10 @@ def ida_star(graph, start_id, end_id):
         else:
             limit = distance
             solution = []
+            sum_visited += len(visited)
             visited = []
-            expanded[0] = 0
-            branching_factor.clear()
+            # expanded[0] = 0
+            # branching_factor.clear()
 
     end_time = timeit.default_timer()
     cost = -1 * distance
@@ -456,7 +461,7 @@ def ida_star(graph, start_id, end_id):
     exec_time = end_time - start_time
     average_branching_factor = sum(branching_factor) / len(branching_factor)
 
-    return [node.vertex_id for node in solution], depth, cost, expanded[0], len(visited), average_branching_factor, exec_time, "success" if success else "fail"
+    return [node.vertex_id for node in solution], depth, cost, expanded[0], sum_visited, average_branching_factor, exec_time, "success" if success else "fail"
 
 def ida_star_aux(graph, node, end_node, distance, visited, limit, path, expanded, branching_factor):
 
@@ -475,11 +480,12 @@ def ida_star_aux(graph, node, end_node, distance, visited, limit, path, expanded
     edges = list(graph[node].keys())
     edges.sort(key=lambda edge: edge.vertex_id)
 
+    n = 0
     expanded[0] += 1
 
     for edge in edges:
         if edge not in visited:
-
+            n += 1
             edge_dist = ida_star_aux(
                             graph,
                             edge,
@@ -493,12 +499,11 @@ def ida_star_aux(graph, node, end_node, distance, visited, limit, path, expanded
                         )
 
             if edge_dist < 0:
-                branching_factor.append(1)
                 return edge_dist
             elif edge_dist < n_limit:
                 n_limit = edge_dist
 
-    branching_factor.append(1)
+    branching_factor.append(n)
 
     if len(path) > 0:
         path.pop()
