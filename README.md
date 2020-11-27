@@ -28,6 +28,6 @@ Os algortimos implementados foram:
 
 Para rodar executar o programa acessar o terminal na pasta do projeto e executa o comando:
 
-`bashpython main.py`
+`python main.py`
 
 e o programa irá rodar todos os algoritmos de busca 10 vezes para cada instância, sendo essas de tamanho 25, 50, 100 e 200. Os resultados serão armazenados em "results.csv" na pasta "outputs".
