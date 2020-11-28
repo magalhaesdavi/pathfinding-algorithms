@@ -1,5 +1,0 @@
-Algorithm, Solution, Depth, Cost, Expanded nodes, Visited nodes, Average branching factor, Execution time, Result
-BFS,['B', 'U', 'F', 'P', 'X', 'Z'],5,160.349,15,20,4.266666666666667,7.246599852805957e-05,success
-DFS,['B', 'V', 'Q', 'U', 'F', 'C', 'W', 'J', 'O', 'D', 'X', 'T', 'M', 'Z'],13,272.873,13,14,5.0,8.82460008142516e-05,success
-Greedy,['B', 'U', 'F', 'C', 'W', 'O', 'Z'],6,150.261,6,7,4.5,0.00016159300139406696,success
-A*,['B', 'U', 'F', 'C', 'W', 'O', 'D', 'Z'],7,136.42399999999998,13,21,2.923076923076923,0.00020829099958064035,success
