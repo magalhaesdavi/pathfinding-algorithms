@@ -51,8 +51,6 @@ def map_generator(available_nodes, density=0.5, weights_range=(0, 100)):
     return map_data, most_far_nodes
 
 def find_smaller(d, alg):
-    # return min(d, key=d.get)
-    # return min(d, key = lambda t: t[2])
     if alg == 'a_star':
         return min(d.items(), key=lambda k: k[1][2])[0]
     if alg == 'greedy':

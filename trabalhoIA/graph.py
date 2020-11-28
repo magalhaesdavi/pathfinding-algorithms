@@ -52,12 +52,10 @@ class Graph:
 
         edge = namedtuple("Edge", ["edgeID", "weight"])
         self.graph[u][v] = edge(edgeID=edgeID_, weight=weight_)
-        # self.graph[u][v] = weight
 
         if v not in self.graph:
             self.graph[v] = {}
         self.graph[v][u] = edge(edgeID=edgeID_, weight=weight_)
-        # self.graph[v][u] = weight
 
         return True
 
