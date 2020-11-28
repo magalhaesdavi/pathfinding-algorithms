@@ -452,8 +452,6 @@ def ida_star(graph, start_id, end_id):
             solution = []
             sum_visited += len(visited)
             visited = []
-            # expanded[0] = 0
-            # branching_factor.clear()
 
     end_time = timeit.default_timer()
     cost = -1 * distance
