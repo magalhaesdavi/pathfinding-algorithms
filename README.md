@@ -6,6 +6,10 @@ O problema de mapas consiste em encontrar o caminhos mais curto (com menor custo
 
 Foi implementado uma classe de grafo para a representação dos mapas, além de um gerador de instâncias para a realização dos experimentos.
 
+Os algoritmos são executados para mapas como este:
+
+<img src="./notebooks/graph_n25.png"/>
+
 ## Algoritmos
 
 Os algortimos implementados foram:
@@ -26,7 +30,7 @@ Os algortimos implementados foram:
 
 ## Execução
 
-Para rodar executar o programa acessar o terminal na pasta do projeto e executa o comando:
+Para rodar executar o programa basta acessar o terminal na pasta do projeto e executar o comando:
 
 `python main.py`
 
