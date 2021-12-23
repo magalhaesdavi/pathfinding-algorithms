@@ -14,7 +14,7 @@ Instance example:
 
 Implemented algorithms:
 
-- Irrevogável;
+- Irrevocable;
 
 - Backtracking;
 
