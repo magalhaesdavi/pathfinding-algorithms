@@ -30,16 +30,16 @@ Implemented algorithms:
 
 - Depth-first search;
 
-- Busca Ordenada;
+- Uniform-Cost Search;
 
 - A\*;
 
 - IDA\*
 
-## Execução
+## Execution
 
-Para rodar executar o programa basta acessar o terminal na pasta do projeto e executar o comando:
+To run the program, just access the terminal in the project folder and run the command:
 
 `python main.py`
 
-e o programa irá rodar todos os algoritmos de busca 10 vezes para cada instância, sendo essas de tamanho 25, 50, 100 e 200. Os resultados serão armazenados em "results.csv" na pasta "outputs".
+and the program will run all the search algorithms 10 times for each instance, with instances having sizes of 25, 50, 100 and 200 nodes. The results will be stored as "results.csv" in the "outputs" folder.
