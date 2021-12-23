@@ -1,4 +1,4 @@
-# Trabalho de IA
+# Pathfinding algorithms implementation
 
 Neste trabalho analisamos o desempenho dos principais algoritmos de busca da literatura no problema de mapas.
 
