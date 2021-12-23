@@ -1,13 +1,5 @@
 # Pathfinding algorithms implementation
 
-Neste trabalho analisamos o desempenho dos principais algoritmos de busca da literatura no problema de mapas.
-
-O problema de mapas consiste em encontrar o caminhos mais curto (com menor custo) entre dos pontos de um mapas.
-
-Foi implementado uma classe de grafo para a representação dos mapas, além de um gerador de instâncias para a realização dos experimentos.
-
-Os algoritmos são executados para mapas como este:
-
 In this work we analyze the performance of the main search algorithms in the literature on the map problem.
 
 The problem consists of finding the shortest path (with the lowest cost) between two points on a map.
