@@ -8,19 +8,27 @@ Foi implementado uma classe de grafo para a representação dos mapas, além de 
 
 Os algoritmos são executados para mapas como este:
 
+In this work we analyze the performance of the main search algorithms in the literature on the map problem.
+
+The problem consists of finding the shortest path (with the lowest cost) between two points on a map.
+
+A graph class for the representation of maps was implemented, as well as a random instance generator to carry out the experiments.
+
+Instance example:
+
 <img src="./notebooks/graph_n25.png"/>
 
-## Algoritmos
+## Algorithms
 
-Os algortimos implementados foram:
+Implemented algorithms:
 
 - Irrevogável;
 
 - Backtracking;
 
-- Busca em Largura;
+- Breadth-first search;
 
-- Busca em Profundide;
+- Depth-first search;
 
 - Busca Ordenada;
 
